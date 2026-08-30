@@ -10,12 +10,64 @@ namespace RecipeManagement.Core;
 /// </summary>
 public sealed class RecipeManager : IRecipeManager
 {
-    // TODO Part A: add your private collection fields here.
+    // Readonly prevents the field from being reassigned to a new dictionary.
+    private readonly Dictionary<int, Recipe> _recipes;
+
+    // Verify if the recipe is null.
+    private void ValidateNotNull(Recipe recipe)
+    {
+        if (recipe is null)
+        {
+            throw new ArgumentNullException(nameof(recipe), "Recipe cannot be null.");
+        }
+    }
+
+    // Verify if the recipe id is non-positive.
+    private void IsIdNonPositive(Recipe recipe)
+    {
+        if (recipe.Id <= 0)
+        {
+            throw new ArgumentException(nameof(recipe), "Recipe Id must be positive.");
+        }
+    }
+
+    // Verify if the recipe title is blank.
+    private void IsTitleBlank(Recipe recipe)
+    {
+        if (string.IsNullOrWhiteSpace(recipe.Title))
+        {
+            throw new ArgumentException(nameof(recipe), "Recipe title cannot be blank.");
+        }
+    }
+
+    // Verify if the recipe Id is duplicate.
+    private void IsIdDuplicate(Recipe recipe)
+    {
+        if (_recipes.ContainsKey(recipe.Id))
+        {
+            throw new ArgumentException(nameof(recipe), "Recipe Id cannot be duplicate.");
+        }
+    }
 
     public RecipeManager(IEnumerable<Recipe> recipes)
     {
-        // TODO Part A: validate recipes and build Dictionary<int, Recipe>.
-        _ = recipes;
+        _recipes = new Dictionary<int, Recipe>();
+
+        if (recipes is null)
+        {
+            throw new ArgumentNullException(nameof(recipes));
+        }
+ 
+        // Verify each recipe and add them if valid.
+        foreach (Recipe recipe in recipes)
+        {
+            ValidateNotNull(recipe);
+            IsIdNonPositive(recipe);
+            IsTitleBlank(recipe);
+            IsIdDuplicate(recipe);
+
+            _recipes.Add(recipe.Id, recipe);
+        }
     }
 
     public int RecipeCount => 0;
@@ -24,7 +76,7 @@ public sealed class RecipeManager : IRecipeManager
     public int PendingInstructionCount => 0;
     public int RemovedRecipeCount => 0;
 
-    public bool AddRecipe(Recipe recipe) =>
+    public bool AddRecipe(Recipe recipe)=>
         throw new NotImplementedException("Part A: implement AddRecipe.");
 
     public Recipe? FindRecipe(int recipeId) =>
