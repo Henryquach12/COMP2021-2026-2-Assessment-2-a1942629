@@ -18,34 +18,46 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (recipe is null)
         {
-            throw new ArgumentNullException(nameof(recipe), "Recipe cannot be null.");
+            throw new ArgumentNullException(
+                "Recipe cannot be null.",
+                nameof(recipe)
+                );
         }
     }
 
     // Verify if the recipe id is non-positive.
-    private void IsIdNonPositive(Recipe recipe)
+    private void ValidateIdPositive(Recipe recipe)
     {
         if (recipe.Id <= 0)
         {
-            throw new ArgumentException(nameof(recipe), "Recipe Id must be positive.");
+            throw new ArgumentException(
+                "Recipe Id must be positive.",
+                nameof(recipe)
+                );
         }
     }
 
     // Verify if the recipe title is blank.
-    private void IsTitleBlank(Recipe recipe)
+    private void ValidateTitleNotBlank(Recipe recipe)
     {
         if (string.IsNullOrWhiteSpace(recipe.Title))
         {
-            throw new ArgumentException(nameof(recipe), "Recipe title cannot be blank.");
+            throw new ArgumentException(
+                "Recipe title cannot be blank.",
+                nameof(recipe)
+                );
         }
     }
 
     // Verify if the recipe Id is duplicate.
-    private void IsIdDuplicate(Recipe recipe)
+    private void ValidateIdNotDuplicate(Recipe recipe)
     {
         if (_recipes.ContainsKey(recipe.Id))
         {
-            throw new ArgumentException(nameof(recipe), "Recipe Id cannot be duplicate.");
+            throw new ArgumentException(
+                "Recipe Id cannot be duplicate.",
+                nameof(recipe)
+                );
         }
     }
 
@@ -62,9 +74,9 @@ public sealed class RecipeManager : IRecipeManager
         foreach (Recipe recipe in recipes)
         {
             ValidateNotNull(recipe);
-            IsIdNonPositive(recipe);
-            IsTitleBlank(recipe);
-            IsIdDuplicate(recipe);
+            ValidateIdPositive(recipe);
+            ValidateTitleNotBlank(recipe);
+            ValidateIdNotDuplicate(recipe);
 
             _recipes.Add(recipe.Id, recipe);
         }
@@ -76,8 +88,25 @@ public sealed class RecipeManager : IRecipeManager
     public int PendingInstructionCount => 0;
     public int RemovedRecipeCount => 0;
 
-    public bool AddRecipe(Recipe recipe)=>
-        throw new NotImplementedException("Part A: implement AddRecipe.");
+    public bool AddRecipe(Recipe recipe)
+    {
+        ValidateNotNull(recipe);
+
+        try
+        {
+            ValidateIdPositive(recipe);
+            ValidateTitleNotBlank(recipe);
+            ValidateIdNotDuplicate(recipe);
+        }
+        catch (ArgumentException ex){
+            Console.WriteLine($"Invalid recipe: {ex.Message}");
+            return false;
+        }
+
+        _recipes.Add(recipe.Id, recipe);
+
+        return true;
+    }
 
     public Recipe? FindRecipe(int recipeId) =>
         throw new NotImplementedException("Part A: implement FindRecipe.");
