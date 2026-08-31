@@ -19,10 +19,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (recipe is null)
         {
-            throw new ArgumentNullException(
-                nameof(recipe),
-                "Recipe cannot be null."
-                );
+            throw new ArgumentNullException(nameof(recipe), "Recipe cannot be null.");
         }
     }
 
@@ -72,9 +69,9 @@ public sealed class RecipeManager : IRecipeManager
             throw new ArgumentNullException(nameof(recipes));
         }
  
-        // Verify each recipe and add them if valid.
         foreach (Recipe recipe in recipes)
         {
+            // Verify each recipe and add them if valid.
             ValidateNotNull(recipe);
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
