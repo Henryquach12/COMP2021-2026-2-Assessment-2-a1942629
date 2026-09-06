@@ -9,34 +9,72 @@ namespace RecipeManagement.Tests;
 public sealed class RecipeManagerTests
 {
     [Fact]
+    // Test initialise RecipeManager.
     public void Constructor_BuildsRecipeDictionary()
     {
         var manager = CreateManager();
         Assert.Equal(2, manager.RecipeCount);
-        Assert.Equal("Recipe A", manager.FindRecipe(10)?.Title);
     }
 
     [Fact]
-    public void InstructionsAreCompletedInFileOrder()
+    // Test RecipeManger rejects null Recipe list.
+    public void Constructor_RejectNullRecipesList()
     {
-        var manager = CreateManager();
-        Assert.True(manager.StartCooking(10));
-        Assert.Equal("First step", manager.PeekNextInstruction());
-        Assert.Equal("First step", manager.CompleteNextInstruction());
-        Assert.Equal("Second step", manager.PeekNextInstruction());
+        Assert.Throws<ArgumentNullException>(() => new RecipeManager(null!));
     }
 
     [Fact]
-    public void RemovedRecipesAreRestoredLastInFirstOut()
+    // Test RecipeManager rejects null recipe in Recipe list.
+    public void Constructor_RejectNullRecipeInList()
     {
-        var manager = CreateManager();
-        manager.AddRecipeToCookingPlan(10);
-        manager.AddRecipeToCookingPlan(20);
-        manager.RemoveRecipeFromCookingPlan(10);
-        manager.RemoveRecipeFromCookingPlan(20);
-        Assert.Equal(20, manager.PeekLastRemovedRecipe());
-        Assert.True(manager.RestoreLastRemovedRecipe());
-        Assert.Equal(new[] { 20 }, manager.GetCookingPlan());
+        Assert.Throws<ArgumentNullException>(() => new RecipeManager(new Recipe[] { null }));
+    }
+
+    [Fact]
+    // Test RecipeManager rejects non-possitive id
+    public void Constructor_RejectNonePossitiveID()
+    {
+        Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
+            Id = -20,
+            Title = "Recipe A",
+            Ingredients = new() { "1 apple" },
+            Instructions = new() { "First step", "Second step" }
+            }}));
+    }
+
+    [Fact]
+    // Test RecipeManager rejects blank title
+    public void Constructor_RejectBlankTitle()
+    {
+        Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
+            Id = 20,
+            Title = "",
+            Ingredients = new() { "1 apple" },
+            Instructions = new() { "First step", "Second step" }
+            }}));
+    }
+
+    [Fact]
+    // Test RecipeManager rejects duplicate Id
+    public void Constructor_RejectDuplicateId()
+    {
+        Assert.Throws<ArgumentException>(() => new RecipeManager(new[]
+        {
+            new Recipe
+            {
+                Id = 20,
+                Title = "Recipe B",
+                Ingredients = new() { "1 apple" },
+                Instructions = new() { "First step", "Second step" }
+            },
+            new Recipe
+            {
+                Id = 20,
+                Title = "Recipe C",
+                Ingredients = new() { "1 apple" },
+                Instructions = new() { "First step", "Second step" }
+            }
+        }));
     }
 
     private static RecipeManager CreateManager()

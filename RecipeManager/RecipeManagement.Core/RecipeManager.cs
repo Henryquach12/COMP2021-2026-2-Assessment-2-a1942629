@@ -15,7 +15,7 @@ public sealed class RecipeManager : IRecipeManager
     private readonly LinkedList<int> _cookingPlan;
 
     // Verify if the recipe is null.
-    private void ValidateNotNull(Recipe recipe)
+    private void ValidateNotNullRecipe(Recipe recipe)
     {
         if (recipe is null)
         {
@@ -72,7 +72,7 @@ public sealed class RecipeManager : IRecipeManager
         foreach (Recipe recipe in recipes)
         {
             // Verify each recipe and add them if valid.
-            ValidateNotNull(recipe);
+            ValidateNotNullRecipe(recipe);
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
             ValidateIdNotDuplicate(recipe);
@@ -89,7 +89,7 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool AddRecipe(Recipe recipe)
     {
-        ValidateNotNull(recipe);
+        ValidateNotNullRecipe(recipe);
 
         try
         {
