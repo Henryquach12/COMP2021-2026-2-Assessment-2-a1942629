@@ -89,10 +89,9 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool AddRecipe(Recipe recipe)
     {
-        ValidateNotNullRecipe(recipe);
-
         try
         {
+            ValidateNotNullRecipe(recipe);
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
             ValidateIdNotDuplicate(recipe);
