@@ -139,6 +139,26 @@ public sealed class RecipeManagerTests
         Assert.Equal(2, manager.RecipeCount);
     }
 
+    [Fact] 
+    // Test FindRecipe that return match.
+    public void FindRecipe_ReturnMatchRecipe()
+    {
+        var manager = CreateManager();
+        Recipe? recipe = manager.FindRecipe(10);
+        Assert.NotNull(recipe);
+        Assert.Equal(10, recipe.Id);
+        Assert.Equal("Recipe A", recipe.Title);
+    }
+
+    [Fact] 
+    // Test FindRecipe that return null.
+    public void FindRecipe_ReturnNull()
+    {
+        var manager = CreateManager();
+        Recipe? recipe = manager.FindRecipe(50);
+        Assert.Null(recipe);
+    }
+    
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
