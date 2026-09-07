@@ -31,7 +31,7 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
-    // Test RecipeManager rejects Recipe with non-positive id
+    // Test RecipeManager rejects Recipe with non-positive id.
     public void Constructor_RejectNonPositiveId()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
@@ -43,7 +43,7 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
-    // Test RecipeManager rejects Recipe with blank title
+    // Test RecipeManager rejects Recipe with blank title.
     public void Constructor_RejectBlankTitle()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
@@ -55,7 +55,7 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
-    // Test RecipeManager rejects Recipe with duplicate Id
+    // Test RecipeManager rejects Recipe with duplicate Id.
     public void Constructor_RejectDuplicateId()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]
@@ -78,30 +78,40 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test AddRecipe
+    // Test AddRecipe successfully addes Recipe.
     public void AddRecipe()
     {
         var manager = CreateManager();
         var recipe = CreateRecipe();
+        Assert.Equal(2, manager.RecipeCount);
+        
         bool addedRecipe = manager.AddRecipe(recipe);
         Assert.Equal(3, manager.RecipeCount);
         Assert.True(addedRecipe);
+        
+        Recipe? added = manager.FindRecipe(30);
+        Assert.NotNull(added);
+        Assert.Equal(30, added.Id);
     }
 
     [Fact] 
-    // Test AddRecipe rejects null parameter
+    // Test AddRecipe rejects null parameter.
     public void AddRecipe_RejectNullRecipe()
     {
         var manager = CreateManager();
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.AddRecipe(null!));
         Assert.Equal(2, manager.RecipeCount);
     }
 
     [Fact] 
-    // Test AddRecipe rejects non-positive id Recipe
+    // Test AddRecipe rejects non-positive id Recipe.
     public void AddRecipe_RejectNonPositiveId()
     {
         var manager = CreateManager();
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.AddRecipe(new Recipe{
             Id = -20,
             Title = "Recipe A",
@@ -112,10 +122,12 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test AddRecipe rejects blank title Recipe
+    // Test AddRecipe rejects blank title Recipe.
     public void AddRecipe_RejectBlankTitle()
     {
         var manager = CreateManager();
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.AddRecipe(new Recipe{
             Id = 20,
             Title = "",
@@ -126,10 +138,12 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test AddRecipe rejects duplicate Id Recipe
+    // Test AddRecipe rejects duplicate Id Recipe.
     public void AddRecipe_RejectDuplicateId()
     {
         var manager = CreateManager();
+        Assert.Equal(2, manager.RecipeCount);
+        
         Assert.False(manager.AddRecipe(new Recipe{
             Id = 10,
             Title = "Recipe D",
@@ -144,6 +158,7 @@ public sealed class RecipeManagerTests
     public void FindRecipe_ReturnMatchRecipe()
     {
         var manager = CreateManager();
+        
         Recipe? recipe = manager.FindRecipe(10);
         Assert.NotNull(recipe);
         Assert.Equal(10, recipe.Id);
@@ -155,15 +170,18 @@ public sealed class RecipeManagerTests
     public void FindRecipe_ReturnNull()
     {
         var manager = CreateManager();
+
         Recipe? recipe = manager.FindRecipe(50);
         Assert.Null(recipe);
     }
 
     [Fact] 
     // Test RemoveRecipe that successfully removes Recipe and returns true.
-    public void RemoveRecipe_SuccessfulRemove()
+    public void RemoveRecipe_SuccessfullyRemove()
     {
         var manager = CreateManager();
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.True(manager.RemoveRecipe(10));
         Assert.Equal(1, manager.RecipeCount);
     }
@@ -173,6 +191,8 @@ public sealed class RecipeManagerTests
     public void RemoveRecipe_MissingIdReturnFalse()
     {
         var manager = CreateManager();
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.RemoveRecipe(100));
         Assert.Equal(2, manager.RecipeCount);
     }
@@ -183,10 +203,40 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
+        
+        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.RemoveRecipe(10));
         Assert.Equal(2, manager.RecipeCount);
     }
-    
+
+    [Fact] 
+    // Test AddIngredientsToShoppingList returns the correct count of those required ingredients.
+    public void AddIngredientsToShoppingList_SuccessfullyAddIngredients()
+    {
+        var manager = CreateManager();
+        Assert.Equal(0, manager.ShoppingItemCount);
+
+        int numberOfIngredients = manager.AddIngredientsToShoppingList(10);
+        Assert.Equal(2, numberOfIngredients);
+        Assert.Equal(2, manager.ShoppingItemCount);
+
+        var shoppingList = manager.GetShoppingList();
+        Assert.Equal("1 apple", shoppingList[0]);
+        Assert.Equal("2 banana", shoppingList[1]);
+    }
+
+    [Fact] 
+    // Test AddIngredientsToShoppingList returns 0 when recipeId is missing.
+    public void AddIngredientsToShoppingList_MissingRecipeIdReturn0()
+    {
+        var manager = CreateManager();
+        Assert.Equal(0, manager.ShoppingItemCount);
+
+        int numberOfIngredients = manager.AddIngredientsToShoppingList(100);
+        Assert.Equal(0, numberOfIngredients);
+        Assert.Equal(0, manager.ShoppingItemCount);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
@@ -195,7 +245,7 @@ public sealed class RecipeManagerTests
             {
                 Id = 10,
                 Title = "Recipe A",
-                Ingredients = new() { "1 apple" },
+                Ingredients = new() { "1 apple", "2 banana" },
                 Instructions = new() { "First step", "Second step" }
             },
             new Recipe
