@@ -140,7 +140,7 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test FindRecipe that return match.
+    // Test FindRecipe that return match Recipe.
     public void FindRecipe_ReturnMatchRecipe()
     {
         var manager = CreateManager();
@@ -151,12 +151,40 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test FindRecipe that return null.
+    // Test FindRecipe that return null since Recipe is not found.
     public void FindRecipe_ReturnNull()
     {
         var manager = CreateManager();
         Recipe? recipe = manager.FindRecipe(50);
         Assert.Null(recipe);
+    }
+
+    [Fact] 
+    // Test RemoveRecipe that successfully removes Recipe and returns true.
+    public void RemoveRecipe_SuccessfulRemove()
+    {
+        var manager = CreateManager();
+        Assert.True(manager.RemoveRecipe(10));
+        Assert.Equal(1, manager.RecipeCount);
+    }
+
+    [Fact] 
+    // Test RemoveRecipe returns false with missing Recipe Id.
+    public void RemoveRecipe_MissingIdReturnFalse()
+    {
+        var manager = CreateManager();
+        Assert.False(manager.RemoveRecipe(100));
+        Assert.Equal(2, manager.RecipeCount);
+    }
+
+    [Fact] 
+    // Test RemoveRecipe returns false when Recipe in cooking plan.
+    public void RemoveRecipe_RecipInCookingPlanReturnFalse()
+    {
+        var manager = CreateManager();
+        manager.AddRecipeToCookingPlan(10);
+        Assert.False(manager.RemoveRecipe(10));
+        Assert.Equal(2, manager.RecipeCount);
     }
     
     private static RecipeManager CreateManager()
