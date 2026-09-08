@@ -258,6 +258,21 @@ public sealed class RecipeManagerTests
         Assert.Equal("2 banana", result[1]);
     }
 
+    [Fact] 
+    // Test ClearShoppingList removes all the items in the current shopping list. 
+    public void ClearShoppingList_RemoveShoppingItems()
+    {
+        var manager = CreateManager();
+        manager.AddIngredientsToShoppingList(10);
+
+        manager.ClearShoppingList();
+
+        var result = manager.GetShoppingList();
+
+        Assert.Empty(result);
+        Assert.Equal(0, manager.ShoppingItemCount);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
