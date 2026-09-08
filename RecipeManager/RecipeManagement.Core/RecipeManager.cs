@@ -20,7 +20,10 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (recipe is null)
         {
-            throw new ArgumentNullException(nameof(recipe), "Recipe cannot be null.");
+            throw new ArgumentNullException(
+                nameof(recipe), 
+                "Recipe cannot be null."
+                );
         }
     }
 
@@ -98,8 +101,7 @@ public sealed class RecipeManager : IRecipeManager
             ValidateTitleNotBlank(recipe);
             ValidateIdNotDuplicate(recipe);
         }
-        catch (ArgumentException ex){
-            Console.WriteLine($"Invalid recipe: {ex.Message}");
+        catch {
             return false;
         }
 
@@ -110,25 +112,23 @@ public sealed class RecipeManager : IRecipeManager
 
     public Recipe? FindRecipe(int recipeId)
     {
+        // The condition is true if recipeId is found and return the found recipe, else the condition is false.   
         if (_recipes.TryGetValue(recipeId, out Recipe? recipe))
         {
             return recipe;
         }
-
-        Console.WriteLine($"{recipeId} cannot be found.");
         return null;
     }
 
     public bool RemoveRecipe(int recipeId)
     {
-        if(!_recipes.TryGetValue(recipeId, out Recipe? recipe))
+        Recipe? recipe = FindRecipe(recipeId);
+        if(recipe == null)
         {
-            Console.WriteLine($"{recipeId} cannot be found.");
             return false;
         }
         else if (_cookingPlan.Contains(recipeId))
         {
-            Console.WriteLine($"{recipeId} {recipe.Title} is currently in the cooking plan.");
             return false;
         }
         _recipes.Remove(recipeId);
@@ -159,8 +159,16 @@ public sealed class RecipeManager : IRecipeManager
         _shoppingList.Clear();
     }
 
-    public bool AddRecipeToCookingPlan(int recipeId) =>
-        throw new NotImplementedException("Part A: implement AddRecipeToCookingPlan.");
+    public bool AddRecipeToCookingPlan(int recipeId)
+    {
+        Recipe? recipe = FindRecipe(recipeId);
+        if (recipe == null || _cookingPlan.Contains(recipeId))
+        {
+            return false;
+        }
+        _cookingPlan.AddLast(recipeId);
+        return true;
+    }
 
     public bool RemoveRecipeFromCookingPlan(int recipeId) =>
         throw new NotImplementedException("Part A: implement RemoveRecipeFromCookingPlan.");

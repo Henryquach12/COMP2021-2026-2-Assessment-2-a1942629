@@ -250,7 +250,7 @@ public sealed class RecipeManagerTests
         Assert.Equal("1 apple", result[0]);
         Assert.Equal("2 banana", result[1]);
 
-        // Verify that the returned list is a separate copy
+        // Verify that the returned list is a separate copy.
         manager.ClearShoppingList();
 
         Assert.Equal(2, result.Count);
@@ -271,6 +271,40 @@ public sealed class RecipeManagerTests
 
         Assert.Empty(result);
         Assert.Equal(0, manager.ShoppingItemCount);
+    }
+
+    [Fact] 
+    // Test AddRecipeToCookingPlan successfully add recipe to cooking plan. 
+    public void AddRecipeToCookingPlan_SuccessfullyAddRecipeToPlan()
+    {
+        var manager = CreateManager();
+        var result = manager.AddRecipeToCookingPlan(10);
+
+        Assert.True(result);
+        Assert.Equal(1, manager.CookingPlanCount);
+    }
+
+    [Fact] 
+    // Test AddRecipeToCookingPlan rejects non-existing recipe.
+    public void AddRecipeToCookingPlan_RejectNullRecipe()
+    {
+        var manager = CreateManager();
+        var result = manager.AddRecipeToCookingPlan(100);
+
+        Assert.False(result);
+        Assert.Equal(0, manager.CookingPlanCount);
+    }
+
+    [Fact] 
+    // Test AddRecipeToCookingPlan rejects duplicate recipe in plan.
+    public void AddRecipeToCookingPlan_RejectDuplicateRecipe()
+    {
+        var manager = CreateManager();
+        manager.AddRecipeToCookingPlan(10);
+        var result = manager.AddRecipeToCookingPlan(10);
+
+        Assert.False(result);
+        Assert.Equal(1, manager.CookingPlanCount);
     }
 
     private static RecipeManager CreateManager()
