@@ -237,6 +237,27 @@ public sealed class RecipeManagerTests
         Assert.Equal(0, manager.ShoppingItemCount);
     }
 
+    [Fact] 
+    // Test GetShoppingList returns ingredient list without exposing internal list.
+    public void GetShoppingList_ReturnIngredientListWithoutExposing()
+    {
+        var manager = CreateManager();
+        manager.AddIngredientsToShoppingList(10);
+        
+        var result = manager.GetShoppingList();
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal("1 apple", result[0]);
+        Assert.Equal("2 banana", result[1]);
+
+        // Verify that the returned list is a separate copy
+        manager.ClearShoppingList();
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal("1 apple", result[0]);
+        Assert.Equal("2 banana", result[1]);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
