@@ -10,7 +10,7 @@ public sealed class RecipeManagerTests
 {
     [Fact]
     // Test calling RecipeManager constructor.
-    public void Constructor_BuildsRecipeDictionary()
+    public void Constructor_SuccessfullyBuildsRecipeDictionary()
     {
         var manager = CreateManager();
         Assert.Equal(2, manager.RecipeCount);
@@ -79,7 +79,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddRecipe successfully addes Recipe.
-    public void AddRecipe()
+    public void AddRecipe_SuccessfullyAddRecipe()
     {
         var manager = CreateManager();
         var recipe = CreateRecipe();
@@ -155,7 +155,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test FindRecipe that return match Recipe.
-    public void FindRecipe_ReturnMatchRecipe()
+    public void FindRecipe_SuccessfullyReturnMatchRecipe()
     {
         var manager = CreateManager();
         
@@ -167,7 +167,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test FindRecipe that return null since Recipe is not found.
-    public void FindRecipe_ReturnNull()
+    public void FindRecipe_RejectMissingRecipeId()
     {
         var manager = CreateManager();
 
@@ -188,7 +188,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipe returns false with missing Recipe Id.
-    public void RemoveRecipe_MissingIdReturnFalse()
+    public void RemoveRecipe_RejectMissingId()
     {
         var manager = CreateManager();
         
@@ -199,7 +199,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipe returns false when Recipe in cooking plan.
-    public void RemoveRecipe_RecipInCookingPlanReturnFalse()
+    public void RemoveRecipe_RejectRecipeInCookingPlan()
     {
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
@@ -260,7 +260,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test ClearShoppingList removes all the items in the current shopping list. 
-    public void ClearShoppingList_RemoveShoppingItems()
+    public void ClearShoppingList_SuccessfullyRemoveShoppingItems()
     {
         var manager = CreateManager();
         manager.AddIngredientsToShoppingList(10);
@@ -306,6 +306,35 @@ public sealed class RecipeManagerTests
         Assert.False(result);
         Assert.Equal(1, manager.CookingPlanCount);
     }
+
+    [Fact] 
+    // Test RemoveRecipeFromCookingPlan successfully removes recipe from the cooking plan.
+    public void RemoveRecipeFromCookingPlan_SuccessfullyRemoveRecipe()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(10);
+        var result = manager.RemoveRecipeFromCookingPlan(10);
+
+        Assert.True(result);
+        Assert.Equal(0, manager.CookingPlanCount);
+        Assert.Equal(1, manager.RemovedRecipeCount);
+    }
+
+    [Fact] 
+    // Test RemoveRecipeFromCookingPlan rejects recipe Id not in cooking plan.
+    public void RemoveRecipeFromCookingPlan_RejectRecipeIdNotInCookingPlan()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(10);
+        var result = manager.RemoveRecipeFromCookingPlan(50);
+
+        Assert.False(result);
+        Assert.Equal(1, manager.CookingPlanCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
+    }
+
 
     private static RecipeManager CreateManager()
     {

@@ -14,6 +14,7 @@ public sealed class RecipeManager : IRecipeManager
     private readonly Dictionary<int, Recipe> _recipes;
     private readonly LinkedList<int> _cookingPlan;
     private readonly List<string> _shoppingList;
+    private readonly Stack<int> _removeRecipe;
 
     // Verify if the recipe is null.
     private void ValidateNotNullRecipe(Recipe recipe)
@@ -68,6 +69,7 @@ public sealed class RecipeManager : IRecipeManager
         _recipes = new Dictionary<int, Recipe>();
         _cookingPlan = new LinkedList<int>();
         _shoppingList = new List<string>();
+        _removeRecipe = new Stack<int>();
 
         if (recipes is null)
         {
@@ -90,7 +92,7 @@ public sealed class RecipeManager : IRecipeManager
     public int ShoppingItemCount => _shoppingList.Count;
     public int CookingPlanCount => _cookingPlan.Count;
     public int PendingInstructionCount => 0;
-    public int RemovedRecipeCount => 0;
+    public int RemovedRecipeCount => _removeRecipe.Count;
 
     public bool AddRecipe(Recipe recipe)
     {
@@ -170,9 +172,17 @@ public sealed class RecipeManager : IRecipeManager
         return true;
     }
 
-    public bool RemoveRecipeFromCookingPlan(int recipeId) =>
-        throw new NotImplementedException("Part A: implement RemoveRecipeFromCookingPlan.");
+    public bool RemoveRecipeFromCookingPlan(int recipeId)
+    {
+        if (!_cookingPlan.Contains(recipeId))
+        {
+            return false;
+        }
+        _cookingPlan.Remove(recipeId);
+        _removeRecipe.Push(recipeId);
 
+        return true;
+    }
     public bool RestoreLastRemovedRecipe() =>
         throw new NotImplementedException("Part A: implement RestoreLastRemovedRecipe.");
 
