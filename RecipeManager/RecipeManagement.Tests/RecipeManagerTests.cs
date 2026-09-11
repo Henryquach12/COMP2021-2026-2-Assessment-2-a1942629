@@ -263,10 +263,9 @@ public sealed class RecipeManagerTests
     public void ClearShoppingList_SuccessfullyRemoveShoppingItems()
     {
         var manager = CreateManager();
+
         manager.AddIngredientsToShoppingList(10);
-
         manager.ClearShoppingList();
-
         var result = manager.GetShoppingList();
 
         Assert.Empty(result);
@@ -300,6 +299,7 @@ public sealed class RecipeManagerTests
     public void AddRecipeToCookingPlan_RejectDuplicateRecipe()
     {
         var manager = CreateManager();
+
         manager.AddRecipeToCookingPlan(10);
         var result = manager.AddRecipeToCookingPlan(10);
 
@@ -335,6 +335,84 @@ public sealed class RecipeManagerTests
         Assert.Equal(0, manager.RemovedRecipeCount);
     }
 
+    [Fact] 
+    // Test RemoveRecipeFromCookingPlan successfully restore last removed Recipe.
+    public void RestoreLastRemovedRecipe_SuccessfullyRestoreLastRemovedRecipe()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(10);
+        manager.RemoveRecipeFromCookingPlan(10);
+
+        Assert.Equal(0, manager.CookingPlanCount);
+        Assert.Equal(1, manager.RemovedRecipeCount);
+
+        bool result = manager.RestoreLastRemovedRecipe();
+
+        Assert.True(result);
+        Assert.Equal(1, manager.CookingPlanCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
+    }
+
+    [Fact]
+    // Test RestoreLastRemovedRecipe returns false when there is no removed Recipe.
+    public void RestoreLastRemovedRecipe_RejectNoRemovedRecipe()
+    {
+        var manager = CreateManager();
+
+        Assert.Equal(0, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+
+        bool result = manager.RestoreLastRemovedRecipe();
+
+        Assert.False(result);
+        Assert.Equal(0, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+    }
+
+    [Fact]
+    // Test RestoreLastRemovedRecipe returns false when the removed Recipe no longer exists.
+    public void RestoreLastRemovedRecipe_RejectRecipeNoLongerExists()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(10);
+        manager.RemoveRecipeFromCookingPlan(10);
+
+        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+
+        manager.RemoveRecipe(10);
+
+        Assert.Null(manager.FindRecipe(10));
+
+        bool result = manager.RestoreLastRemovedRecipe();
+
+        Assert.False(result);
+        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+    }
+
+    [Fact]
+    // Test RestoreLastRemovedRecipe returns false when the removed Recipe is still in the cooking plan.
+    public void RestoreLastRemovedRecipe_RejectRecipeInCookingPlan()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(10);
+        manager.RemoveRecipeFromCookingPlan(10);
+
+        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+
+        manager.AddRecipeToCookingPlan(10);
+
+        bool result = manager.RestoreLastRemovedRecipe();
+
+        Assert.False(result);
+        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(1, manager.CookingPlanCount);
+    }
 
     private static RecipeManager CreateManager()
     {
