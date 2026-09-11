@@ -414,6 +414,39 @@ public sealed class RecipeManagerTests
         Assert.Equal(1, manager.CookingPlanCount);
     }
 
+    [Fact]
+    // Test PeekLastRemovedRecipe returns null when the removed recipe stack is empty.
+    public void PeekLastRemovedRecipe_RejectEmptyStack()
+    {
+        var manager = CreateManager();
+
+        Assert.Equal(0, manager.RemovedRecipeCount);
+
+        int? result = manager.PeekLastRemovedRecipe();
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    // Test PeekLastRemovedRecipe successfully returns last removed recipe Id.
+    public void PeekLastRemovedRecipe_SuccessfullyFindLastRemoveRecipeId()
+    {
+        var manager = CreateManager();
+
+        manager.AddRecipeToCookingPlan(30);
+        manager.AddRecipeToCookingPlan(40);
+
+        manager.RemoveRecipeFromCookingPlan(30);
+        manager.RemoveRecipeFromCookingPlan(40);
+
+        Assert.Equal(2, manager.RemovedRecipeCount);
+
+        int? result = manager.PeekLastRemovedRecipe();
+
+        Assert.Equal(40, result);
+        Assert.Equal(2, manager.RemovedRecipeCount);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
