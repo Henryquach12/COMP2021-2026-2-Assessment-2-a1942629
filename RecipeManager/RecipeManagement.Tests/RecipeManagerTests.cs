@@ -96,7 +96,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddRecipe rejects null parameter.
-    public void AddRecipe_RejectNullRecipe()
+    public void AddRecipeToCookingPlan_RejectMissingRecipeId()
     {
         var manager = CreateManager();
         
@@ -433,18 +433,51 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
-        manager.AddRecipeToCookingPlan(30);
-        manager.AddRecipeToCookingPlan(40);
+        Assert.True(manager.AddRecipeToCookingPlan(10));
+        Assert.True(manager.AddRecipeToCookingPlan(20));
 
-        manager.RemoveRecipeFromCookingPlan(30);
-        manager.RemoveRecipeFromCookingPlan(40);
+        Assert.True(manager.RemoveRecipeFromCookingPlan(10));
+        Assert.True(manager.RemoveRecipeFromCookingPlan(20));
 
         Assert.Equal(2, manager.RemovedRecipeCount);
 
         int? result = manager.PeekLastRemovedRecipe();
 
-        Assert.Equal(40, result);
+        Assert.Equal(20, result);
         Assert.Equal(2, manager.RemovedRecipeCount);
+    }
+
+    [Fact]
+    // Test GetCookingPlan successfully returns the cooking plan without exposing the internal one.
+    public void GetCookingPlan_SuccessfullyReturnTheCookingPlanWithoutExposing()
+    {
+        var manager = CreateManager();
+
+        Assert.True(manager.AddRecipeToCookingPlan(10));
+        Assert.True(manager.AddRecipeToCookingPlan(20));
+
+        var result = manager.GetCookingPlan();
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(10, result[0]);
+        Assert.Equal(20, result[1]);
+
+        manager.RemoveRecipeFromCookingPlan(10);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(10, result[0]);
+        Assert.Equal(20, result[1]);
+    }
+
+    [Fact]
+    // Test GetCookingPlan returns empty list when cooking plan is empty.
+    public void GetCookingPlan_ReturnEmptyListWhenCookingPlanIsEmpty()
+    {
+        var manager = CreateManager();
+
+        var result = manager.GetCookingPlan();
+
+        Assert.Empty(result);
     }
 
     private static RecipeManager CreateManager()

@@ -228,8 +228,19 @@ public sealed class RecipeManager : IRecipeManager
         return lastId;
     }
     
-    public IReadOnlyList<int> GetCookingPlan() =>
-        throw new NotImplementedException("Part A: implement GetCookingPlan.");
+    public IReadOnlyList<int> GetCookingPlan()
+    {
+        LinkedListNode<int>? recipe = _cookingPlan.First;
+        List<int> cookingPlanCopy = [];
+
+        while (recipe != null)
+        {
+                cookingPlanCopy.Add(recipe.Value);   
+                recipe = recipe.Next;
+        }
+
+        return cookingPlanCopy;
+    }
 
     public bool StartCooking(int recipeId) =>
         throw new NotImplementedException("Part A: implement StartCooking.");
