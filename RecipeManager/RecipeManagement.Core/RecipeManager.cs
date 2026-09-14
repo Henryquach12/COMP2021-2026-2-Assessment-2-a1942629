@@ -15,6 +15,7 @@ public sealed class RecipeManager : IRecipeManager
     private readonly LinkedList<int> _cookingPlan;
     private readonly List<string> _shoppingList;
     private readonly Stack<int> _removeRecipe;
+    private readonly Queue<string> _cookingInstruction;
 
     // Verify if the recipe is null.
     private void ValidateNotNullRecipe(Recipe recipe)
@@ -70,6 +71,7 @@ public sealed class RecipeManager : IRecipeManager
         _cookingPlan = new LinkedList<int>();
         _shoppingList = new List<string>();
         _removeRecipe = new Stack<int>();
+        _cookingInstruction = new Queue<string>();
 
         if (recipes is null)
         {
@@ -91,7 +93,7 @@ public sealed class RecipeManager : IRecipeManager
     public int RecipeCount => _recipes.Count;
     public int ShoppingItemCount => _shoppingList.Count;
     public int CookingPlanCount => _cookingPlan.Count;
-    public int PendingInstructionCount => 0;
+    public int PendingInstructionCount => _cookingInstruction.Count;
     public int RemovedRecipeCount => _removeRecipe.Count;
 
     public bool AddRecipe(Recipe recipe)
@@ -242,8 +244,24 @@ public sealed class RecipeManager : IRecipeManager
         return cookingPlanCopy;
     }
 
-    public bool StartCooking(int recipeId) =>
-        throw new NotImplementedException("Part A: implement StartCooking.");
+    public bool StartCooking(int recipeId)
+    {
+        Recipe? recipe = FindRecipe(recipeId);
+
+        if (recipe == null || recipe.Instructions.Count == 0)
+        {
+            return false;
+        }
+        
+        _cookingInstruction.Clear();
+
+        foreach (string intruction in recipe.Instructions)
+        {
+            _cookingInstruction.Enqueue(intruction);
+        }
+        
+        return true;
+    }
 
     public string? PeekNextInstruction() =>
         throw new NotImplementedException("Part A: implement PeekNextInstruction.");

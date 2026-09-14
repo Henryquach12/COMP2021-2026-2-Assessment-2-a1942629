@@ -95,8 +95,8 @@ public sealed class RecipeManagerTests
     }
 
     [Fact] 
-    // Test AddRecipe rejects null parameter.
-    public void AddRecipeToCookingPlan_RejectMissingRecipeId()
+    // Test AddRecipe rejects null recipe.
+    public void AddRecipe_RejectNullRecipe()
     {
         var manager = CreateManager();
         
@@ -155,7 +155,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test FindRecipe that return match Recipe.
-    public void FindRecipe_SuccessfullyReturnMatchRecipe()
+    public void FindRecipe_SuccessfullyReturnsMatchingRecipe()
     {
         var manager = CreateManager();
         
@@ -167,7 +167,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test FindRecipe that return null since Recipe is not found.
-    public void FindRecipe_RejectMissingRecipeId()
+    public void FindRecipe_ReturnsNullForMissingRecipeId()
     {
         var manager = CreateManager();
 
@@ -177,7 +177,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipe that successfully removes Recipe and returns true.
-    public void RemoveRecipe_SuccessfullyRemove()
+    public void RemoveRecipe_SuccessfullyRemovesRecipe()
     {
         var manager = CreateManager();
         
@@ -188,7 +188,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipe returns false with missing Recipe Id.
-    public void RemoveRecipe_RejectMissingId()
+    public void RemoveRecipe_ReturnsFalseForMissingRecipeId()
     {
         var manager = CreateManager();
         
@@ -199,7 +199,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipe returns false when Recipe in cooking plan.
-    public void RemoveRecipe_RejectRecipeInCookingPlan()
+    public void RemoveRecipe_ReturnsFalseWhenRecipeIsInCookingPlan()
     {
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
@@ -227,7 +227,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddIngredientsToShoppingList returns 0 when recipeId is missing.
-    public void AddIngredientsToShoppingList_MissingRecipeIdReturn0()
+    public void AddIngredientsToShoppingList_ReturnsZeroForMissingRecipeId()
     {
         var manager = CreateManager();
         Assert.Equal(0, manager.ShoppingItemCount);
@@ -239,7 +239,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test GetShoppingList returns ingredient list without exposing internal list.
-    public void GetShoppingList_ReturnIngredientListWithoutExposing()
+    public void GetShoppingList_ReturnsCopyWithoutExposingInternalList()
     {
         var manager = CreateManager();
         manager.AddIngredientsToShoppingList(10);
@@ -260,7 +260,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test ClearShoppingList removes all the items in the current shopping list. 
-    public void ClearShoppingList_SuccessfullyRemoveShoppingItems()
+    public void ClearShoppingList_SuccessfullyRemovesAllItems()
     {
         var manager = CreateManager();
 
@@ -274,7 +274,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddRecipeToCookingPlan successfully add recipe to cooking plan. 
-    public void AddRecipeToCookingPlan_SuccessfullyAddRecipeToPlan()
+    public void AddRecipeToCookingPlan_SuccessfullyAddsRecipe()
     {
         var manager = CreateManager();
         var result = manager.AddRecipeToCookingPlan(10);
@@ -285,7 +285,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddRecipeToCookingPlan rejects non-existing recipe.
-    public void AddRecipeToCookingPlan_RejectNullRecipe()
+    public void AddRecipeToCookingPlan_ReturnsFalseForMissingRecipeId()
     {
         var manager = CreateManager();
         var result = manager.AddRecipeToCookingPlan(100);
@@ -296,7 +296,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test AddRecipeToCookingPlan rejects duplicate recipe in plan.
-    public void AddRecipeToCookingPlan_RejectDuplicateRecipe()
+    public void AddRecipeToCookingPlan_RejectsDuplicateRecipe()
     {
         var manager = CreateManager();
 
@@ -309,7 +309,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipeFromCookingPlan successfully removes recipe from the cooking plan.
-    public void RemoveRecipeFromCookingPlan_SuccessfullyRemoveRecipe()
+    public void RemoveRecipeFromCookingPlan_SuccessfullyRemovesRecipe()
     {
         var manager = CreateManager();
 
@@ -323,7 +323,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipeFromCookingPlan rejects recipe Id not in cooking plan.
-    public void RemoveRecipeFromCookingPlan_RejectRecipeIdNotInCookingPlan()
+    public void RemoveRecipeFromCookingPlan_ReturnsFalseForMissingRecipeId()
     {
         var manager = CreateManager();
 
@@ -337,7 +337,7 @@ public sealed class RecipeManagerTests
 
     [Fact] 
     // Test RemoveRecipeFromCookingPlan successfully restore last removed Recipe.
-    public void RestoreLastRemovedRecipe_SuccessfullyRestoreLastRemovedRecipe()
+    public void RestoreLastRemovedRecipe_SuccessfullyRestoresRecipe()
     {
         var manager = CreateManager();
 
@@ -356,7 +356,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RestoreLastRemovedRecipe returns false when there is no removed Recipe.
-    public void RestoreLastRemovedRecipe_RejectNoRemovedRecipe()
+    public void RestoreLastRemovedRecipe_ReturnsFalseWhenStackIsEmpty()
     {
         var manager = CreateManager();
 
@@ -372,7 +372,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RestoreLastRemovedRecipe returns false when the removed Recipe no longer exists.
-    public void RestoreLastRemovedRecipe_RejectRecipeNoLongerExists()
+    public void RestoreLastRemovedRecipe_ReturnsFalseWhenRecipeNoLongerExists()
     {
         var manager = CreateManager();
 
@@ -395,7 +395,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RestoreLastRemovedRecipe returns false when the removed Recipe is still in the cooking plan.
-    public void RestoreLastRemovedRecipe_RejectRecipeInCookingPlan()
+    public void RestoreLastRemovedRecipe_ReturnsFalseWhenRecipeAlreadyInCookingPlan()
     {
         var manager = CreateManager();
 
@@ -416,7 +416,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test PeekLastRemovedRecipe returns null when the removed recipe stack is empty.
-    public void PeekLastRemovedRecipe_RejectEmptyStack()
+    public void PeekLastRemovedRecipe_ReturnsNullWhenStackIsEmpty()
     {
         var manager = CreateManager();
 
@@ -429,7 +429,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test PeekLastRemovedRecipe successfully returns last removed recipe Id.
-    public void PeekLastRemovedRecipe_SuccessfullyFindLastRemoveRecipeId()
+    public void PeekLastRemovedRecipe_ReturnsLastRemovedRecipeId()
     {
         var manager = CreateManager();
 
@@ -449,7 +449,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test GetCookingPlan successfully returns the cooking plan without exposing the internal one.
-    public void GetCookingPlan_SuccessfullyReturnTheCookingPlanWithoutExposing()
+    public void GetCookingPlan_ReturnsCopyWithoutExposingInternalPlan()
     {
         var manager = CreateManager();
 
@@ -471,13 +471,59 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test GetCookingPlan returns empty list when cooking plan is empty.
-    public void GetCookingPlan_ReturnEmptyListWhenCookingPlanIsEmpty()
+    public void GetCookingPlan_ReturnsEmptyListWhenPlanIsEmpty()
     {
         var manager = CreateManager();
 
         var result = manager.GetCookingPlan();
 
         Assert.Empty(result);
+    }
+
+    [Fact]
+    // Test StartCooking successfully adds instructions to cooking instruction.
+    public void StartCooking_SuccessfullyAddInstructionToCookingInstruction()
+    {
+        var manager = CreateManager();
+
+        var result = manager.StartCooking(10);
+
+        Assert.True(result);
+        Assert.Equal(2, manager.PendingInstructionCount);
+    }
+
+    [Fact]
+    // Test StartCooking returns false when the recipe does not exist.
+    public void StartCooking_ReturnsFalseForMissingRecipeId()
+    {
+        var manager = CreateManager();
+        
+        var result = manager.StartCooking(30);
+
+        Assert.False(result);
+        Assert.Equal(0, manager.PendingInstructionCount);
+    }
+
+    [Fact]
+    // Test StartCooking returns false when the recipe instruction is empty.
+    public void StartCooking_ReturnsFalseForRecipeWithNoInstructions()
+    {
+        var manager = CreateManager();
+
+        Recipe newRecipe = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() { "2 apple" },
+            Instructions = new() { }
+        };
+
+        manager.AddRecipe(newRecipe);
+
+        var result = manager.StartCooking(newRecipe.Id);
+
+        Assert.False(result);
+        Assert.Equal(0, manager.PendingInstructionCount);
     }
 
     private static RecipeManager CreateManager()
