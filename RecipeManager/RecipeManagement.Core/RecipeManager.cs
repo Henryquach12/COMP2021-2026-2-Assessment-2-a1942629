@@ -263,11 +263,25 @@ public sealed class RecipeManager : IRecipeManager
         return true;
     }
 
-    public string? PeekNextInstruction() =>
-        throw new NotImplementedException("Part A: implement PeekNextInstruction.");
+    public string? PeekNextInstruction()
+    {
+        if (PendingInstructionCount == 0)
+        {
+            return null;
+        }
 
-    public string? CompleteNextInstruction() =>
-        throw new NotImplementedException("Part A: implement CompleteNextInstruction.");
+        return _cookingInstruction.Peek();
+    }
+
+    public string? CompleteNextInstruction()
+    {
+        if (PendingInstructionCount == 0)
+        {
+            return null;
+        }
+        
+        return _cookingInstruction.Dequeue();
+    }
 
     public IReadOnlyList<Recipe> SearchByTitle(string searchText) =>
         throw new NotImplementedException("Part B: implement SearchByTitle.");

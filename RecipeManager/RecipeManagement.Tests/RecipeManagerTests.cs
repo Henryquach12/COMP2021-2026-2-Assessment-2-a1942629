@@ -526,6 +526,65 @@ public sealed class RecipeManagerTests
         Assert.Equal(0, manager.PendingInstructionCount);
     }
 
+    [Fact]
+    // Test PeekNextInstruction successfully returns the next instruction without removing it from the queue.
+    public void PeekNextInstruction_SuccessfullyReturnsNextInstruction()
+    {
+        var manager = CreateManager();
+
+        manager.StartCooking(10);
+
+        string? result = manager.PeekNextInstruction();
+
+        Assert.Equal("First step", result);
+        Assert.Equal(2, manager.PendingInstructionCount);
+    }
+
+    [Fact]
+    // Test PeekNextInstruction returns null when the instruction queue is empty.
+    public void PeekNextInstruction_ReturnsNullWhenQueueIsEmpty()
+    {
+        var manager = CreateManager();
+
+        Assert.Equal(0, manager.PendingInstructionCount);
+
+        string? result = manager.PeekNextInstruction();
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    // Test CompleteNextInstruction successfully removes and returns exactly one instruction from the front of the queue.
+    public void CompleteNextInstruction_SuccessfullyRemovesAndReturnsFirstInstruction()
+    {
+        var manager = CreateManager();
+
+        manager.StartCooking(10);
+
+        string? result = manager.CompleteNextInstruction();
+
+        Assert.Equal("First step", result);
+        Assert.Equal(1, manager.PendingInstructionCount);
+
+        string? nextResult = manager.PeekNextInstruction();
+
+        Assert.Equal("Second step", nextResult);
+        Assert.Equal(1, manager.PendingInstructionCount);
+    }
+
+    [Fact]
+    // Test CompleteNextInstruction returns null when the instruction queue is empty.
+    public void CompleteNextInstruction_ReturnsNullWhenQueueIsEmpty()
+    {
+        var manager = CreateManager();
+
+        Assert.Equal(0, manager.PendingInstructionCount);
+
+        string? result = manager.CompleteNextInstruction();
+
+        Assert.Null(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
