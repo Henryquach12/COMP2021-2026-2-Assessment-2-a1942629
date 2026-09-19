@@ -98,15 +98,10 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool AddRecipe(Recipe recipe)
     {
-        try
-        {
-            ValidateNotNullRecipe(recipe);
-            ValidateIdPositive(recipe);
-            ValidateTitleNotBlank(recipe);
-            ValidateIdNotDuplicate(recipe);
-        }
+        ValidateNotNullRecipe(recipe);
 
-        catch {
+        if (recipe.Id <= 0 || _recipes.ContainsKey(recipe.Id) || string.IsNullOrWhiteSpace(recipe.Title))
+        {
             return false;
         }
 
