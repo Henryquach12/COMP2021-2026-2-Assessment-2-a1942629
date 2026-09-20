@@ -124,6 +124,7 @@ public sealed class RecipeManager : IRecipeManager
     public bool RemoveRecipe(int recipeId)
     {
         Recipe? recipe = FindRecipe(recipeId);
+        
         if(recipe == null)
         {
             return false;
@@ -250,9 +251,9 @@ public sealed class RecipeManager : IRecipeManager
         
         _cookingInstruction.Clear();
 
-        foreach (string intruction in recipe.Instructions)
+        foreach (string instruction in recipe.Instructions)
         {
-            _cookingInstruction.Enqueue(intruction);
+            _cookingInstruction.Enqueue(instruction);
         }
         
         return true;

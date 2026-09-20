@@ -120,6 +120,7 @@ public sealed class RecipeManagerTests
         Assert.Equal(3, manager.RecipeCount);
         Assert.True(addedRecipe);
 
+        // FindRecipe can find new added Recipe.
         Recipe? added = manager.FindRecipe(30);
         Assert.NotNull(added);
         Assert.Equal(30, added.Id);
@@ -139,8 +140,8 @@ public sealed class RecipeManagerTests
     public void AddRecipeRejectsNonPositiveId()
     {
         var manager = CreateManager();
-
         Assert.Equal(2, manager.RecipeCount);
+
         Assert.False(manager.AddRecipe(new Recipe
         {
             Id = -20,
@@ -148,6 +149,7 @@ public sealed class RecipeManagerTests
             Ingredients = new() { "1 apple" },
             Instructions = new() { "First step", "Second step" }
         }));
+
         Assert.Equal(2, manager.RecipeCount);
     }
 
@@ -156,8 +158,8 @@ public sealed class RecipeManagerTests
     public void AddRecipeRejectsBlankTitle()
     {
         var manager = CreateManager();
-
         Assert.Equal(2, manager.RecipeCount);
+
         Assert.False(manager.AddRecipe(new Recipe
         {
             Id = 40,
@@ -165,6 +167,7 @@ public sealed class RecipeManagerTests
             Ingredients = new() { "1 apple" },
             Instructions = new() { "First step", "Second step" }
         }));
+
         Assert.Equal(2, manager.RecipeCount);
     }
 
@@ -182,6 +185,7 @@ public sealed class RecipeManagerTests
             Ingredients = new() { "1 apple" },
             Instructions = new() { "First step", "Second step" }
         }));
+
         Assert.Equal(2, manager.RecipeCount);
     }
 
@@ -212,8 +216,8 @@ public sealed class RecipeManagerTests
     public void RemoveRecipeSuccessfullyRemovesRecipe()
     {
         var manager = CreateManager();
-
         Assert.Equal(2, manager.RecipeCount);
+
         Assert.True(manager.RemoveRecipe(10));
         Assert.Equal(1, manager.RecipeCount);
     }
@@ -223,8 +227,8 @@ public sealed class RecipeManagerTests
     public void RemoveRecipeReturnsFalseForMissingRecipeId()
     {
         var manager = CreateManager();
-
         Assert.Equal(2, manager.RecipeCount);
+
         Assert.False(manager.RemoveRecipe(100));
         Assert.Equal(2, manager.RecipeCount);
     }
@@ -234,9 +238,10 @@ public sealed class RecipeManagerTests
     public void RemoveRecipeReturnsFalseWhenRecipeIsInCookingPlan()
     {
         var manager = CreateManager();
+        Assert.Equal(2, manager.RecipeCount);
+
         manager.AddRecipeToCookingPlan(10);
 
-        Assert.Equal(2, manager.RecipeCount);
         Assert.False(manager.RemoveRecipe(10));
         Assert.Equal(2, manager.RecipeCount);
     }
@@ -248,10 +253,12 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         Assert.Equal(0, manager.ShoppingItemCount);
 
+        // The returned total ingredients matches the exact item in shopping list.
         int numberOfIngredients = manager.AddIngredientsToShoppingList(10);
         Assert.Equal(2, numberOfIngredients);
         Assert.Equal(2, manager.ShoppingItemCount);
 
+        // Find exact added items in shopping list.
         var shoppingList = manager.GetShoppingList();
         Assert.Equal("1 apple", shoppingList[0]);
         Assert.Equal("2 banana", shoppingList[1]);
@@ -266,6 +273,7 @@ public sealed class RecipeManagerTests
 
         int numberOfIngredients = manager.AddIngredientsToShoppingList(100);
         Assert.Equal(0, numberOfIngredients);
+
         Assert.Equal(0, manager.ShoppingItemCount);
     }
 
@@ -277,12 +285,11 @@ public sealed class RecipeManagerTests
         manager.AddIngredientsToShoppingList(10);
 
         var result = manager.GetShoppingList();
-
         Assert.Equal(2, result.Count);
         Assert.Equal("1 apple", result[0]);
         Assert.Equal("2 banana", result[1]);
 
-        // Verify that the returned list is a separate copy.
+        // Clearing real shopping list does not affect the copy.
         manager.ClearShoppingList();
 
         Assert.Equal(2, result.Count);
@@ -295,12 +302,13 @@ public sealed class RecipeManagerTests
     public void ClearShoppingListSuccessfullyRemovesAllItems()
     {
         var manager = CreateManager();
-
         manager.AddIngredientsToShoppingList(10);
         manager.ClearShoppingList();
-        var result = manager.GetShoppingList();
 
+        // Shopping list is empty after clearing.
+        var result = manager.GetShoppingList();
         Assert.Empty(result);
+
         Assert.Equal(0, manager.ShoppingItemCount);
     }
 
@@ -309,9 +317,10 @@ public sealed class RecipeManagerTests
     public void AddRecipeToCookingPlanSuccessfullyAddsRecipe()
     {
         var manager = CreateManager();
-        var result = manager.AddRecipeToCookingPlan(10);
 
+        var result = manager.AddRecipeToCookingPlan(10);
         Assert.True(result);
+
         Assert.Equal(1, manager.CookingPlanCount);
     }
 
@@ -320,9 +329,10 @@ public sealed class RecipeManagerTests
     public void AddRecipeToCookingPlanReturnsFalseForMissingRecipeId()
     {
         var manager = CreateManager();
-        var result = manager.AddRecipeToCookingPlan(100);
 
+        var result = manager.AddRecipeToCookingPlan(100);
         Assert.False(result);
+
         Assert.Equal(0, manager.CookingPlanCount);
     }
 
@@ -331,11 +341,11 @@ public sealed class RecipeManagerTests
     public void AddRecipeToCookingPlanRejectsDuplicateRecipe()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
-        var result = manager.AddRecipeToCookingPlan(10);
 
+        var result = manager.AddRecipeToCookingPlan(10);
         Assert.False(result);
+
         Assert.Equal(1, manager.CookingPlanCount);
     }
 
@@ -344,11 +354,11 @@ public sealed class RecipeManagerTests
     public void RemoveRecipeFromCookingPlanSuccessfullyRemovesRecipe()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
+        
         var result = manager.RemoveRecipeFromCookingPlan(10);
-
         Assert.True(result);
+
         Assert.Equal(0, manager.CookingPlanCount);
         Assert.Equal(1, manager.RemovedRecipeCount);
     }
@@ -358,11 +368,11 @@ public sealed class RecipeManagerTests
     public void RemoveRecipeFromCookingPlanReturnsFalseWhenRecipeIsNotInCookingPlan()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
-        var result = manager.RemoveRecipeFromCookingPlan(50);
 
+        var result = manager.RemoveRecipeFromCookingPlan(50);
         Assert.False(result);
+
         Assert.Equal(1, manager.CookingPlanCount);
         Assert.Equal(0, manager.RemovedRecipeCount);
     }
@@ -372,21 +382,20 @@ public sealed class RecipeManagerTests
     public void RestoreLastRemovedRecipeSuccessfullyRestoresRecipe()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
         manager.AddRecipeToCookingPlan(20);
-
         manager.RemoveRecipeFromCookingPlan(10);
 
         Assert.Equal(1, manager.CookingPlanCount);
         Assert.Equal(1, manager.RemovedRecipeCount);
 
         bool result = manager.RestoreLastRemovedRecipe();
-
         Assert.True(result);
+
         Assert.Equal(2, manager.CookingPlanCount);
         Assert.Equal(0, manager.RemovedRecipeCount);
 
+        // Find restored Recipe in cooking plan.
         var plan = manager.GetCookingPlan(); 
         Assert.Equal(20, plan.First()); 
         Assert.Equal(10, plan.Last());
@@ -397,13 +406,12 @@ public sealed class RecipeManagerTests
     public void RestoreLastRemovedRecipeReturnsFalseWhenStackIsEmpty()
     {
         var manager = CreateManager();
-
         Assert.Equal(0, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
 
         bool result = manager.RestoreLastRemovedRecipe();
-
         Assert.False(result);
+
         Assert.Equal(0, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
     }
@@ -413,20 +421,19 @@ public sealed class RecipeManagerTests
     public void RestoreLastRemovedRecipeReturnsFalseWhenRecipeNoLongerExists()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
         manager.RemoveRecipeFromCookingPlan(10);
 
         Assert.Equal(1, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
 
+        // Remove the removed Recipe.
         manager.RemoveRecipe(10);
-
         Assert.Null(manager.FindRecipe(10));
 
         bool result = manager.RestoreLastRemovedRecipe();
-
         Assert.False(result);
+
         Assert.Equal(1, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
     }
@@ -436,18 +443,18 @@ public sealed class RecipeManagerTests
     public void RestoreLastRemovedRecipeReturnsFalseWhenRecipeIsAlreadyInCookingPlan()
     {
         var manager = CreateManager();
-
         manager.AddRecipeToCookingPlan(10);
         manager.RemoveRecipeFromCookingPlan(10);
 
         Assert.Equal(1, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
-
+        
+        // Add the removed Recipe to the cooking plan.
         manager.AddRecipeToCookingPlan(10);
 
         bool result = manager.RestoreLastRemovedRecipe();
-
         Assert.False(result);
+
         Assert.Equal(1, manager.RemovedRecipeCount);
         Assert.Equal(1, manager.CookingPlanCount);
     }
@@ -461,7 +468,6 @@ public sealed class RecipeManagerTests
         Assert.Equal(0, manager.RemovedRecipeCount);
 
         int? result = manager.PeekLastRemovedRecipe();
-
         Assert.Null(result);
     }
 
@@ -470,18 +476,16 @@ public sealed class RecipeManagerTests
     public void PeekLastRemovedRecipeSuccessfullyReturnsLastRemovedRecipeId()
     {
         var manager = CreateManager();
-
         Assert.True(manager.AddRecipeToCookingPlan(10));
         Assert.True(manager.AddRecipeToCookingPlan(20));
-
         Assert.True(manager.RemoveRecipeFromCookingPlan(10));
         Assert.True(manager.RemoveRecipeFromCookingPlan(20));
 
         Assert.Equal(2, manager.RemovedRecipeCount);
 
         int? result = manager.PeekLastRemovedRecipe();
-
         Assert.Equal(20, result);
+
         Assert.Equal(2, manager.RemovedRecipeCount);
     }
 
@@ -490,16 +494,15 @@ public sealed class RecipeManagerTests
     public void GetCookingPlanReturnsCopyWithoutExposingInternalPlan()
     {
         var manager = CreateManager();
-
         Assert.True(manager.AddRecipeToCookingPlan(10));
         Assert.True(manager.AddRecipeToCookingPlan(20));
 
         var result = manager.GetCookingPlan();
-
         Assert.Equal(2, result.Count);
         Assert.Equal(10, result[0]);
         Assert.Equal(20, result[1]);
 
+        // RemoveRecipe does not impact the copy.
         manager.RemoveRecipeFromCookingPlan(10);
 
         Assert.Equal(2, result.Count);
@@ -514,7 +517,6 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
 
         var result = manager.GetCookingPlan();
-
         Assert.Empty(result);
     }
 
@@ -525,8 +527,8 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
 
         var result = manager.StartCooking(10);
-
         Assert.True(result);
+
         Assert.Equal(2, manager.PendingInstructionCount);
     }
 
@@ -537,8 +539,8 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
 
         var result = manager.StartCooking(30);
-
         Assert.False(result);
+        
         Assert.Equal(0, manager.PendingInstructionCount);
     }
 
@@ -548,6 +550,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
 
+        // Add Recipe that has empty instructions.
         Recipe newRecipe = new Recipe
         {
             Id = 40,
@@ -555,12 +558,11 @@ public sealed class RecipeManagerTests
             Ingredients = new() { "2 apple" },
             Instructions = new() { }
         };
-
         manager.AddRecipe(newRecipe);
 
         var result = manager.StartCooking(newRecipe.Id);
-
         Assert.False(result);
+
         Assert.Equal(0, manager.PendingInstructionCount);
     }
 
@@ -569,12 +571,11 @@ public sealed class RecipeManagerTests
     public void PeekNextInstructionSuccessfullyReturnsNextInstruction()
     {
         var manager = CreateManager();
-
         manager.StartCooking(10);
 
         string? result = manager.PeekNextInstruction();
-
         Assert.Equal("First step", result);
+
         Assert.Equal(2, manager.PendingInstructionCount);
     }
 
@@ -583,11 +584,9 @@ public sealed class RecipeManagerTests
     public void PeekNextInstructionReturnsNullWhenQueueIsEmpty()
     {
         var manager = CreateManager();
-
         Assert.Equal(0, manager.PendingInstructionCount);
 
         string? result = manager.PeekNextInstruction();
-
         Assert.Null(result);
     }
 
@@ -596,17 +595,17 @@ public sealed class RecipeManagerTests
     public void CompleteNextInstructionSuccessfullyRemovesAndReturnsFirstInstruction()
     {
         var manager = CreateManager();
-
         manager.StartCooking(10);
 
         string? result = manager.CompleteNextInstruction();
-
         Assert.Equal("First step", result);
+
         Assert.Equal(1, manager.PendingInstructionCount);
 
+        // Peek find second instruction instead of first instruction.
         string? nextResult = manager.PeekNextInstruction();
-
         Assert.Equal("Second step", nextResult);
+
         Assert.Equal(1, manager.PendingInstructionCount);
     }
 
@@ -615,11 +614,9 @@ public sealed class RecipeManagerTests
     public void CompleteNextInstructionReturnsNullWhenQueueIsEmpty()
     {
         var manager = CreateManager();
-
         Assert.Equal(0, manager.PendingInstructionCount);
 
         string? result = manager.CompleteNextInstruction();
-
         Assert.Null(result);
     }
 
