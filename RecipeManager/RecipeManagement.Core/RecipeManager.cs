@@ -10,12 +10,12 @@ namespace RecipeManagement.Core;
 /// </summary>
 public sealed class RecipeManager : IRecipeManager
 {
-    // Readonly prevents the field from being reassigned to a new dictionary.
+    // Readonly prevents these collection fields from being reassigned to new collections.
     private readonly Dictionary<int, Recipe> _recipes;
     private readonly LinkedList<int> _cookingPlan;
     private readonly List<string> _shoppingList;
-    private readonly Stack<int> _removeRecipe;
-    private readonly Queue<string> _cookingInstruction;
+    private readonly Stack<int> _removedRecipes;
+    private readonly Queue<string> _cookingInstructions;
 
     // Verify if the recipe is null.
     private void ValidateNotNullRecipe(Recipe recipe)
@@ -70,8 +70,8 @@ public sealed class RecipeManager : IRecipeManager
         _recipes = new Dictionary<int, Recipe>();
         _cookingPlan = new LinkedList<int>();
         _shoppingList = new List<string>();
-        _removeRecipe = new Stack<int>();
-        _cookingInstruction = new Queue<string>();
+        _removedRecipes = new Stack<int>();
+        _cookingInstructions = new Queue<string>();
 
         if (recipes is null)
         {
@@ -93,14 +93,20 @@ public sealed class RecipeManager : IRecipeManager
     public int RecipeCount => _recipes.Count;
     public int ShoppingItemCount => _shoppingList.Count;
     public int CookingPlanCount => _cookingPlan.Count;
-    public int PendingInstructionCount => _cookingInstruction.Count;
-    public int RemovedRecipeCount => _removeRecipe.Count;
+    public int PendingInstructionCount => _cookingInstructions.Count;
+    public int RemovedRecipeCount => _removedRecipes.Count;
 
     public bool AddRecipe(Recipe recipe)
     {
         ValidateNotNullRecipe(recipe);
 
-        if (recipe.Id <= 0 || _recipes.ContainsKey(recipe.Id) || string.IsNullOrWhiteSpace(recipe.Title))
+        try
+        {
+            ValidateIdPositive(recipe);
+            ValidateTitleNotBlank(recipe);
+            ValidateIdNotDuplicate(recipe);
+        } 
+        catch (ArgumentException)
         {
             return false;
         }
@@ -111,8 +117,7 @@ public sealed class RecipeManager : IRecipeManager
     }
 
     public Recipe? FindRecipe(int recipeId)
-    {
-        // The condition is true if recipeId is found and return the found recipe, else the condition is false.   
+    { 
         if (_recipes.TryGetValue(recipeId, out Recipe? recipe))
         {
             return recipe;
@@ -124,8 +129,8 @@ public sealed class RecipeManager : IRecipeManager
     public bool RemoveRecipe(int recipeId)
     {
         Recipe? recipe = FindRecipe(recipeId);
-        
-        if(recipe == null)
+
+        if (recipe == null)
         {
             return false;
         }
@@ -159,6 +164,7 @@ public sealed class RecipeManager : IRecipeManager
 
     public IReadOnlyList<string> GetShoppingList()
     {
+        // Return a list copy of _shoppingList to prevent caller from modifying the internal _shoppingList.
         return new List<string>(_shoppingList);
     }
 
@@ -183,13 +189,12 @@ public sealed class RecipeManager : IRecipeManager
 
     public bool RemoveRecipeFromCookingPlan(int recipeId)
     {
-        if (!_cookingPlan.Contains(recipeId))
+        if (!_cookingPlan.Remove(recipeId))
         {
             return false;
         }
 
-        _cookingPlan.Remove(recipeId);
-        _removeRecipe.Push(recipeId);
+        _removedRecipes.Push(recipeId);
 
         return true;
     }
@@ -201,14 +206,15 @@ public sealed class RecipeManager : IRecipeManager
             return false;
         }
 
-        int lastId = _removeRecipe.Peek();
+        // Peek first so the recipe remains in the stack if it cannot be restored.
+        int lastId = _removedRecipes.Peek();
 
         if (FindRecipe(lastId) == null || _cookingPlan.Contains(lastId))
         {
             return false;
         }
 
-        int removedId = _removeRecipe.Pop();
+        int removedId = _removedRecipes.Pop();
         _cookingPlan.AddLast(removedId);
 
         return true;
@@ -221,20 +227,20 @@ public sealed class RecipeManager : IRecipeManager
             return null;
         }
 
-        int lastId = _removeRecipe.Peek();
-        
-        return lastId;
+        return _removedRecipes.Peek();
     }
     
     public IReadOnlyList<int> GetCookingPlan()
     {
-        LinkedListNode<int>? recipe = _cookingPlan.First;
+        LinkedListNode<int>? currentNode = _cookingPlan.First;
+
+        // List copy of _cookingPlan to prevent caller from modifying the internal _cookingPlan.
         List<int> cookingPlanCopy = [];
 
-        while (recipe != null)
+        while (currentNode != null)
         {
-                cookingPlanCopy.Add(recipe.Value);   
-                recipe = recipe.Next;
+            cookingPlanCopy.Add(currentNode.Value);   
+            currentNode = currentNode.Next;
         }
 
         return cookingPlanCopy;
@@ -249,11 +255,11 @@ public sealed class RecipeManager : IRecipeManager
             return false;
         }
         
-        _cookingInstruction.Clear();
+        _cookingInstructions.Clear();
 
         foreach (string instruction in recipe.Instructions)
         {
-            _cookingInstruction.Enqueue(instruction);
+            _cookingInstructions.Enqueue(instruction);
         }
         
         return true;
@@ -266,7 +272,7 @@ public sealed class RecipeManager : IRecipeManager
             return null;
         }
 
-        return _cookingInstruction.Peek();
+        return _cookingInstructions.Peek();
     }
 
     public string? CompleteNextInstruction()
@@ -276,7 +282,7 @@ public sealed class RecipeManager : IRecipeManager
             return null;
         }
         
-        return _cookingInstruction.Dequeue();
+        return _cookingInstructions.Dequeue();
     }
 
     public IReadOnlyList<Recipe> SearchByTitle(string searchText) =>

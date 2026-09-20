@@ -9,7 +9,7 @@ namespace RecipeManagement.Tests;
 public sealed class RecipeManagerTests
 {
     [Fact]
-    public void Constructor_BuildsRecipeDictionary()
+    public void ConstructorBuildsRecipeDictionary()
     {
         var manager = CreateManager();
         Assert.Equal(2, manager.RecipeCount);
@@ -41,7 +41,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RecipeManager constructor successfully builds Recipe dictionary.
-    public void Constructor_SuccessfullyBuildsRecipeDictionary()
+    public void ConstructorSuccessfullyBuildsRecipeDictionary()
     {
         var manager = CreateManager();
         Assert.Equal(2, manager.RecipeCount);
@@ -49,21 +49,21 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RecipeManager rejects null Recipe list.
-    public void Constructor_RejectsNullRecipeList()
+    public void ConstructorRejectsNullRecipeList()
     {
         Assert.Throws<ArgumentNullException>(() => new RecipeManager(null!));
     }
 
     [Fact]
     // Test RecipeManager rejects null Recipe in Recipe list.
-    public void Constructor_RejectsNullRecipeInList()
+    public void ConstructorRejectsNullRecipeInList()
     {
         Assert.Throws<ArgumentNullException>(() => new RecipeManager(new Recipe[] { null! }));
     }
 
     [Fact]
     // Test RecipeManager rejects Recipe with non-positive Id.
-    public void Constructor_RejectsNonPositiveId()
+    public void ConstructorRejectsNonPositiveId()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
             Id = -20,
@@ -75,7 +75,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RecipeManager rejects Recipe with blank title.
-    public void Constructor_RejectsBlankTitle()
+    public void ConstructorRejectsBlankTitle()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]{new Recipe{
             Id = 20,
@@ -87,7 +87,7 @@ public sealed class RecipeManagerTests
 
     [Fact]
     // Test RecipeManager rejects Recipe with duplicate Id.
-    public void Constructor_RejectsDuplicateId()
+    public void ConstructorRejectsDuplicateId()
     {
         Assert.Throws<ArgumentException>(() => new RecipeManager(new[]
         {
@@ -370,7 +370,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
 
-        var result = manager.RemoveRecipeFromCookingPlan(50);
+        var result = manager.RemoveRecipeFromCookingPlan(20);
         Assert.False(result);
 
         Assert.Equal(1, manager.CookingPlanCount);
@@ -502,7 +502,7 @@ public sealed class RecipeManagerTests
         Assert.Equal(10, result[0]);
         Assert.Equal(20, result[1]);
 
-        // RemoveRecipe does not impact the copy.
+        // Removing a recipe from the cooking plan does not impact the copy.
         manager.RemoveRecipeFromCookingPlan(10);
 
         Assert.Equal(2, result.Count);
