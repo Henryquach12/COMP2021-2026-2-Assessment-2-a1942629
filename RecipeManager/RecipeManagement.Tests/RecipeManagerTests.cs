@@ -567,6 +567,25 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
+    // Test StartCooking clears leftover instructions before cooking the new Recipe.
+    public void StartCookingClearsLeftoverInstructionsFromPreviousRecipe()
+    {
+        var manager = CreateManager();
+        manager.AddRecipe(CreateRecipe());
+
+        // Init cooking Recipe.
+        Assert.True(manager.StartCooking(10));
+        Assert.Equal(2, manager.PendingInstructionCount);
+
+        Assert.True(manager.StartCooking(30));
+        Assert.Equal(2, manager.PendingInstructionCount);
+
+        Assert.Equal("First step", manager.CompleteNextInstruction());
+        Assert.Equal("Third step", manager.CompleteNextInstruction());
+        Assert.Equal(0, manager.PendingInstructionCount);
+    }
+
+    [Fact]
     // Test PeekNextInstruction successfully returns the next instruction without removing it from the queue.
     public void PeekNextInstructionSuccessfullyReturnsNextInstruction()
     {
