@@ -14,74 +14,26 @@ public sealed class RecipeManager : IRecipeManager
     private readonly Dictionary<int, Recipe> _recipes;
     private readonly LinkedList<int> _cookingPlan;
     private readonly List<string> _shoppingList;
-    private readonly Stack<int> _removedRecipes;
+    private readonly Stack<int> _removedPlanIds;
     private readonly Queue<string> _cookingInstructions;
-
-    // Verify if the recipe is null.
-    private void ValidateNotNullRecipe(Recipe recipe)
-    {
-        if (recipe is null)
-        {
-            throw new ArgumentNullException(
-                nameof(recipe), 
-                "Recipe cannot be null."
-                );
-        }
-    }
-
-    // Verify if the recipe id is non-positive.
-    private void ValidateIdPositive(Recipe recipe)
-    {
-        if (recipe.Id <= 0)
-        {
-            throw new ArgumentException(
-                "Recipe Id must be positive.",
-                nameof(recipe)
-                );
-        }
-    }
-
-    // Verify if the recipe title is blank.
-    private void ValidateTitleNotBlank(Recipe recipe)
-    {
-        if (string.IsNullOrWhiteSpace(recipe.Title))
-        {
-            throw new ArgumentException(
-                "Recipe title cannot be blank.",
-                nameof(recipe)
-                );
-        }
-    }
-
-    // Verify if the recipe Id is duplicate.
-    private void ValidateIdNotDuplicate(Recipe recipe)
-    {
-        if (_recipes.ContainsKey(recipe.Id))
-        {
-            throw new ArgumentException(
-                "Recipe Id cannot be duplicate.",
-                nameof(recipe)
-                );
-        }
-    }
 
     public RecipeManager(IEnumerable<Recipe> recipes)
     {
         _recipes = new Dictionary<int, Recipe>();
         _cookingPlan = new LinkedList<int>();
         _shoppingList = new List<string>();
-        _removedRecipes = new Stack<int>();
+        _removedPlanIds = new Stack<int>();
         _cookingInstructions = new Queue<string>();
 
         if (recipes is null)
         {
             throw new ArgumentNullException(nameof(recipes));
         }
- 
+
         foreach (Recipe recipe in recipes)
         {
             // Verify each recipe and add them if valid.
-            ValidateNotNullRecipe(recipe);
+            ValidateRecipeNotNull(recipe);
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
             ValidateIdNotDuplicate(recipe);
@@ -94,18 +46,18 @@ public sealed class RecipeManager : IRecipeManager
     public int ShoppingItemCount => _shoppingList.Count;
     public int CookingPlanCount => _cookingPlan.Count;
     public int PendingInstructionCount => _cookingInstructions.Count;
-    public int RemovedRecipeCount => _removedRecipes.Count;
+    public int RemovedRecipeCount => _removedPlanIds.Count;
 
     public bool AddRecipe(Recipe recipe)
     {
-        ValidateNotNullRecipe(recipe);
+        ValidateRecipeNotNull(recipe);
 
         try
         {
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
             ValidateIdNotDuplicate(recipe);
-        } 
+        }
         catch (ArgumentException)
         {
             return false;
@@ -117,7 +69,7 @@ public sealed class RecipeManager : IRecipeManager
     }
 
     public Recipe? FindRecipe(int recipeId)
-    { 
+    {
         if (_recipes.TryGetValue(recipeId, out Recipe? recipe))
         {
             return recipe;
@@ -130,12 +82,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         Recipe? recipe = FindRecipe(recipeId);
 
-        if (recipe == null)
-        {
-            return false;
-        }
-
-        else if (_cookingPlan.Contains(recipeId))
+        if (recipe is null || _cookingPlan.Contains(recipeId))
         {
             return false;
         }
@@ -149,11 +96,11 @@ public sealed class RecipeManager : IRecipeManager
     {
         Recipe? recipe = FindRecipe(recipeId);
 
-        if (recipe == null)
+        if (recipe is null)
         {
             return 0;
         }
-        
+
         foreach (string ingredient in recipe.Ingredients)
         {
             _shoppingList.Add(ingredient);
@@ -177,7 +124,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         Recipe? recipe = FindRecipe(recipeId);
 
-        if (recipe == null || _cookingPlan.Contains(recipeId))
+        if (recipe is null || _cookingPlan.Contains(recipeId))
         {
             return false;
         }
@@ -194,7 +141,7 @@ public sealed class RecipeManager : IRecipeManager
             return false;
         }
 
-        _removedRecipes.Push(recipeId);
+        _removedPlanIds.Push(recipeId);
 
         return true;
     }
@@ -207,14 +154,14 @@ public sealed class RecipeManager : IRecipeManager
         }
 
         // Peek first so the recipe remains in the stack if it cannot be restored.
-        int lastId = _removedRecipes.Peek();
+        int lastId = _removedPlanIds.Peek();
 
-        if (FindRecipe(lastId) == null || _cookingPlan.Contains(lastId))
+        if (FindRecipe(lastId) is null || _cookingPlan.Contains(lastId))
         {
             return false;
         }
 
-        int removedId = _removedRecipes.Pop();
+        int removedId = _removedPlanIds.Pop();
         _cookingPlan.AddLast(removedId);
 
         return true;
@@ -227,19 +174,19 @@ public sealed class RecipeManager : IRecipeManager
             return null;
         }
 
-        return _removedRecipes.Peek();
+        return _removedPlanIds.Peek();
     }
-    
+
     public IReadOnlyList<int> GetCookingPlan()
     {
         LinkedListNode<int>? currentNode = _cookingPlan.First;
 
         // List copy of _cookingPlan to prevent caller from modifying the internal _cookingPlan.
-        List<int> cookingPlanCopy = [];
+        List<int> cookingPlanCopy = new List<int>();
 
-        while (currentNode != null)
+        while (currentNode is not null)
         {
-            cookingPlanCopy.Add(currentNode.Value);   
+            cookingPlanCopy.Add(currentNode.Value);
             currentNode = currentNode.Next;
         }
 
@@ -250,18 +197,18 @@ public sealed class RecipeManager : IRecipeManager
     {
         Recipe? recipe = FindRecipe(recipeId);
 
-        if (recipe == null || recipe.Instructions.Count == 0)
+        if (recipe is null || recipe.Instructions.Count == 0)
         {
             return false;
         }
-        
+
         _cookingInstructions.Clear();
 
         foreach (string instruction in recipe.Instructions)
         {
             _cookingInstructions.Enqueue(instruction);
         }
-        
+
         return true;
     }
 
@@ -281,7 +228,7 @@ public sealed class RecipeManager : IRecipeManager
         {
             return null;
         }
-        
+
         return _cookingInstructions.Dequeue();
     }
 
@@ -305,4 +252,52 @@ public sealed class RecipeManager : IRecipeManager
 
     public IReadOnlyList<int> GetSavedRecipes() =>
         throw new NotImplementedException("Part B: implement GetSavedRecipes.");
+
+    // Verify if the recipe is null.
+    private static void ValidateRecipeNotNull(Recipe recipe)
+    {
+        if (recipe is null)
+        {
+            throw new ArgumentNullException(
+                nameof(recipe),
+                "Recipe cannot be null."
+                );
+        }
+    }
+
+    // Verify if the recipe id is non-positive.
+    private static void ValidateIdPositive(Recipe recipe)
+    {
+        if (recipe.Id <= 0)
+        {
+            throw new ArgumentException(
+                "Recipe Id must be positive.",
+                nameof(recipe)
+                );
+        }
+    }
+
+    // Verify if the recipe title is blank.
+    private static void ValidateTitleNotBlank(Recipe recipe)
+    {
+        if (string.IsNullOrWhiteSpace(recipe.Title))
+        {
+            throw new ArgumentException(
+                "Recipe title cannot be blank.",
+                nameof(recipe)
+                );
+        }
+    }
+
+    // Verify if the recipe Id is duplicate.
+    private void ValidateIdNotDuplicate(Recipe recipe)
+    {
+        if (_recipes.ContainsKey(recipe.Id))
+        {
+            throw new ArgumentException(
+                "Recipe Id cannot be duplicate.",
+                nameof(recipe)
+                );
+        }
+    }
 }

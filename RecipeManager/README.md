@@ -37,4 +37,6 @@ Until you implement `RecipeManager`, menu options print a **Not implemented** me
 
 ## AI acknowledgement
 
-I did not use generative AI in the preparation of this assignment.
+AI acknowledgement: I used ChatGPT to help me understand the C# coding convention. I did not
+copy or adapt AI-generated code or other material into my submission. I developed the submitted solution
+myself based on my understanding of the course material.
