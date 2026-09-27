@@ -153,16 +153,14 @@ public sealed class RecipeManager : IRecipeManager
             return false;
         }
 
-        // Peek first so the recipe remains in the stack if it cannot be restored.
-        int lastId = _removedPlanIds.Peek();
+        int lastId = _removedPlanIds.Pop();
 
         if (FindRecipe(lastId) is null || _cookingPlan.Contains(lastId))
         {
             return false;
         }
 
-        int removedId = _removedPlanIds.Pop();
-        _cookingPlan.AddLast(removedId);
+        _cookingPlan.AddLast(lastId);
 
         return true;
     }

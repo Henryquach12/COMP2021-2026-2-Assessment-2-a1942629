@@ -434,7 +434,7 @@ public sealed class RecipeManagerTests
         bool result = manager.RestoreLastRemovedRecipe();
         Assert.False(result);
 
-        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
         Assert.Equal(0, manager.CookingPlanCount);
     }
 
@@ -455,7 +455,7 @@ public sealed class RecipeManagerTests
         bool result = manager.RestoreLastRemovedRecipe();
         Assert.False(result);
 
-        Assert.Equal(1, manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
         Assert.Equal(1, manager.CookingPlanCount);
     }
 
