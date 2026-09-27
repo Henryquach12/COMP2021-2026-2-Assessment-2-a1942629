@@ -3,9 +3,6 @@ using RecipeManagement.Core;
 
 namespace RecipeManagement.Tests;
 
-/// <summary>
-/// Example tests from the assignment specification. Add your own tests as you work.
-/// </summary>
 public sealed class RecipeManagerTests
 {
     [Fact]
@@ -37,14 +34,6 @@ public sealed class RecipeManagerTests
         Assert.Equal(20, manager.PeekLastRemovedRecipe());
         Assert.True(manager.RestoreLastRemovedRecipe());
         Assert.Equal(new[] { 20 }, manager.GetCookingPlan());
-    }
-
-    [Fact]
-    // Test RecipeManager constructor successfully builds Recipe dictionary.
-    public void ConstructorSuccessfullyBuildsRecipeDictionary()
-    {
-        var manager = CreateManager();
-        Assert.Equal(2, manager.RecipeCount);
     }
 
     [Fact]

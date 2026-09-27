@@ -3,11 +3,6 @@ using System.Collections.Generic;
 
 namespace RecipeManagement.Core;
 
-/// <summary>
-/// Implement this class using the five Part A collections as private fields:
-/// Dictionary&lt;int, Recipe&gt;, List&lt;string&gt;, LinkedList&lt;int&gt;,
-/// Stack&lt;int&gt; and Queue&lt;string&gt;.
-/// </summary>
 public sealed class RecipeManager : IRecipeManager
 {
     // Readonly prevents these collection fields from being reassigned to new collections.
@@ -32,7 +27,6 @@ public sealed class RecipeManager : IRecipeManager
 
         foreach (Recipe recipe in recipes)
         {
-            // Verify each recipe and add them if valid.
             ValidateRecipeNotNull(recipe);
             ValidateIdPositive(recipe);
             ValidateTitleNotBlank(recipe);
