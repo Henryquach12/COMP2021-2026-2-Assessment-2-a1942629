@@ -664,6 +664,56 @@ public sealed class RecipeManagerTests
         Assert.Empty(result);
     }
 
+    [Fact]
+    // Test SearchByIngredient successfully returns every recipe that contains the search text in its ingredients.
+    public void SearchByIngredientSuccessfullyReturnsRecipeListMatchInputIngredient()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByIngredient("onion");
+
+        // "1 onion" appears in three recipes so all three match.
+        Assert.Equal(3, result.Count);
+        Assert.Contains(result, recipe => recipe.Id == 1);
+        Assert.Contains(result, recipe => recipe.Id == 3);
+        Assert.Contains(result, recipe => recipe.Id == 4);
+    }
+
+    [Fact]
+    // Test SearchByIngredient returns a Recipe only once when several of its ingredients match.
+    public void SearchByIngredientReturnsEachRecipeOnlyOnce()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByIngredient("chicken");
+
+        // Even recipe 1 contains both "500g chicken" and "1 tsp chicken stock" ingredients but it is appeared once in the list.
+        Assert.Equal(2, result.Count);
+        Assert.Single(result, recipe => recipe.Id == 1);
+    }
+
+    [Fact]
+    // Test SearchByIngredient returns no Recipe when the search text is blank.
+    public void SearchByIngredientReturnsEmptyForBlankSearchText()
+    {
+        var manager = CreateSearchManager();
+
+        // Empty and white-space search text are both treated as blank.
+        Assert.Empty(manager.SearchByIngredient(""));
+        Assert.Empty(manager.SearchByIngredient("   "));
+    }
+
+    [Fact]
+    // Test SearchByIngredient returns no Recipe when no ingredient matches the search text.
+    public void SearchByIngredientReturnsEmptyForMissingIngredient()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByIngredient("watermelon");
+
+        Assert.Empty(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]

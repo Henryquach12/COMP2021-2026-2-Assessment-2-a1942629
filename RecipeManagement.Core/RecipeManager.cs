@@ -230,12 +230,30 @@ public sealed class RecipeManager : IRecipeManager
         {
             return [];
         }
+        
+        string trimSearchText = searchText.Trim();
 
-        return _recipes.Values.Where(recipe => recipe.Title.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+        return _recipes.Values
+            .Where(recipe => recipe.Title
+                .Contains(trimSearchText, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
-    public IReadOnlyList<Recipe> SearchByIngredient(string searchText) =>
-        throw new NotImplementedException("Part B: implement SearchByIngredient.");
+    public IReadOnlyList<Recipe> SearchByIngredient(string searchText)
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            return [];
+        }
+
+        string trimSearchText = searchText.Trim();
+
+        return _recipes.Values
+            .Where(recipe => recipe.Ingredients
+                .Any(ingredient => ingredient.Contains(
+                    trimSearchText, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+    }
 
     public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count) =>
         throw new NotImplementedException("Part B: implement GetHighestProteinRecipes.");
