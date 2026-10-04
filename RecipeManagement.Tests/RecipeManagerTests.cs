@@ -714,6 +714,72 @@ public sealed class RecipeManagerTests
         Assert.Empty(result);
     }
 
+    [Fact]
+    // Test GetHighestProteinRecipes successfully returns up to the requested number of Recipes ordered by highest available protein value.
+    public void GetHighestProteinRecipesSuccessfullyReturnsCountRecipesOrderedByProteinDescending()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.GetHighestProteinRecipes(2);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(3, result[0].Id);
+        Assert.Equal(1, result[1].Id);
+    }
+
+    [Fact]
+    // Test GetHighestProteinRecipes returns no Recipe with null ProteinG.
+    public void GetHighestProteinRecipesReturnsEmptyForNullProteinG()
+    {
+        var manager = new RecipeManager(new[]
+        {
+            new Recipe
+            {
+                Id = 1,
+                Title = "Fake cake",
+                Nutrition = new NutritionInfo { ProteinG = null }
+            }
+        });
+
+        IReadOnlyList<Recipe> result = manager.GetHighestProteinRecipes(5);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    // Test GetHighestProteinRecipes returns no Recipe when count is zero.
+    public void GetHighestProteinRecipesReturnsEmptyForZeroCount()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.GetHighestProteinRecipes(0);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    // Test GetHighestProteinRecipes returns no Recipe when count is negative.
+    public void GetHighestProteinRecipesReturnsEmptyForNegativeCount()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.GetHighestProteinRecipes(-1);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    // Test GetHighestProteinRecipes excludes Recipe with null Nutrition.
+    public void GetHighestProteinRecipesExcludesNullNutrition()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.GetHighestProteinRecipes(5);
+
+        Assert.Equal(3, result.Count);
+        Assert.DoesNotContain(result, recipe => recipe.Id == 4);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
@@ -779,7 +845,7 @@ public sealed class RecipeManagerTests
                 Ingredients = new() { "6 tomato", "1 onion" },
                 Instructions = new() { "Simmer the tomato" },
                 Nutrition = null
-            }
+            },
         });
     }
 }
