@@ -224,8 +224,15 @@ public sealed class RecipeManager : IRecipeManager
         return _cookingInstructions.Dequeue();
     }
 
-    public IReadOnlyList<Recipe> SearchByTitle(string searchText) =>
-        throw new NotImplementedException("Part B: implement SearchByTitle.");
+    public IReadOnlyList<Recipe> SearchByTitle(string searchText)
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            return [];
+        }
+
+        return _recipes.Values.Where(recipe => recipe.Title.Contains(searchText.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+    }
 
     public IReadOnlyList<Recipe> SearchByIngredient(string searchText) =>
         throw new NotImplementedException("Part B: implement SearchByIngredient.");
@@ -245,7 +252,6 @@ public sealed class RecipeManager : IRecipeManager
     public IReadOnlyList<int> GetSavedRecipes() =>
         throw new NotImplementedException("Part B: implement GetSavedRecipes.");
 
-    // Verify if the recipe is null.
     private static void ValidateRecipeNotNull(Recipe recipe)
     {
         if (recipe is null)
@@ -257,7 +263,6 @@ public sealed class RecipeManager : IRecipeManager
         }
     }
 
-    // Verify if the recipe id is non-positive.
     private static void ValidateIdPositive(Recipe recipe)
     {
         if (recipe.Id <= 0)
@@ -269,7 +274,6 @@ public sealed class RecipeManager : IRecipeManager
         }
     }
 
-    // Verify if the recipe title is blank.
     private static void ValidateTitleNotBlank(Recipe recipe)
     {
         if (string.IsNullOrWhiteSpace(recipe.Title))
@@ -281,7 +285,6 @@ public sealed class RecipeManager : IRecipeManager
         }
     }
 
-    // Verify if the recipe Id is duplicate.
     private void ValidateIdNotDuplicate(Recipe recipe)
     {
         if (_recipes.ContainsKey(recipe.Id))

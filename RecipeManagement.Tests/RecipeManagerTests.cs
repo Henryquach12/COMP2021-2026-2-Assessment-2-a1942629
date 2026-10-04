@@ -628,6 +628,42 @@ public sealed class RecipeManagerTests
         Assert.Null(result);
     }
 
+    [Fact]
+    // Test SearchByTitle successfully returns every recipe whose title contains the search text.
+    public void SearchByTitleSuccessfullyReturnsRecipeListMatchInputTitle()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByTitle("Chicken");
+
+        // "Chicken Curry" and "chicken salad" are differed in case but they both match.
+        Assert.Equal(2, result.Count);
+        Assert.Contains(result, recipe => recipe.Id == 1);
+        Assert.Contains(result, recipe => recipe.Id == 2);
+    }
+
+    [Fact]
+    // Test SearchByTitle returns no Recipe when the search text is blank.
+    public void SearchByTitleReturnsEmptyForBlankSearchText()
+    {
+        var manager = CreateSearchManager();
+
+        // Empty and white-space search text are both treated as blank.
+        Assert.Empty(manager.SearchByTitle(""));
+        Assert.Empty(manager.SearchByTitle("   "));
+    }
+
+    [Fact]
+    // Test SearchByTitle returns no Recipe when no title matches the search text.
+    public void SearchByTitleReturnsEmptyForMissingTitle()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByTitle("pizza");
+
+        Assert.Empty(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
@@ -656,5 +692,44 @@ public sealed class RecipeManagerTests
             Ingredients = new() { "2 apple" },
             Instructions = new() { "First step", "Third step" }
         };
+    }
+
+    private static RecipeManager CreateSearchManager()
+    {
+        return new RecipeManager(new[]
+        {
+            new Recipe
+            {
+                Id = 1,
+                Title = "Chicken Curry",
+                Ingredients = new() { "500g chicken", "1 tsp chicken stock", "1 onion" },
+                Instructions = new() { "Fry the onion", "Add the chicken" },
+                Nutrition = new NutritionInfo { ProteinG = 32.5 }
+            },
+            new Recipe
+            {
+                Id = 2,
+                Title = "chicken salad",
+                Ingredients = new() { "200g chicken", "1 lettuce", "2 tomato" },
+                Instructions = new() { "Chop the lettuce" },
+                Nutrition = new NutritionInfo { ProteinG = 18.0 }
+            },
+            new Recipe
+            {
+                Id = 3,
+                Title = "Beef Stew",
+                Ingredients = new() { "600g beef", "3 carrot", "1 onion" },
+                Instructions = new() { "Brown the beef" },
+                Nutrition = new NutritionInfo { ProteinG = 41.2 }
+            },
+            new Recipe
+            {
+                Id = 4,
+                Title = "Tomato Soup",
+                Ingredients = new() { "6 tomato", "1 onion" },
+                Instructions = new() { "Simmer the tomato" },
+                Nutrition = null
+            }
+        });
     }
 }
