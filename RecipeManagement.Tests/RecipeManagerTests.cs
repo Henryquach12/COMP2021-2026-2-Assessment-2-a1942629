@@ -886,6 +886,32 @@ public sealed class RecipeManagerTests
         Assert.False(result);
     }
 
+    [Fact]
+    // Test GetSavedRecipes successfully returns all saved Recipe Id.
+    public void GetSavedRecipesSuccessfullyReturnsAllSavedRecipeIds()
+    {
+        var manager = CreateSearchManager();
+        manager.AddSavedRecipe(1);
+        manager.AddSavedRecipe(3);
+
+        IReadOnlyList<int> result = manager.GetSavedRecipes();
+
+        Assert.Equal(2, result.Count);
+        Assert.Contains(1, result);
+        Assert.Contains(3, result);
+    }
+
+    [Fact]
+    // Test GetSavedRecipes returns no Recipe Id when no Recipe is saved.
+    public void GetSavedRecipesReturnsEmptyWhenNoneSaved()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<int> result = manager.GetSavedRecipes();
+
+        Assert.Empty(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
