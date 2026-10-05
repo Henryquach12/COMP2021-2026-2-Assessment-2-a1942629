@@ -1,10 +1,14 @@
 # Design
 
-Complete this document for **Part B**.
-
 ## 1. Saved recipe collection
 
-Name the C# collection you selected for the saved/favourite feature and explain why it suits add, remove, duplicate prevention and membership checks.
+I used HashSet to implement saved/favourite features.
+
+- HashSet is suitable for adding because it prevents duplicate values, and its Add() method also returns a bool based on whether the value was successfully added. This matches the specification requirement for AddSavedRecipe to return a bool, making it easy to determine whether a recipe ID has already been saved.
+
+- HashSet is suitable for removing saved recipes because its Remove() method has an average time complexity of O(1). This is because HashSet uses the hash of the recipe ID to directly find and remove the value, while removing an item from a List requires O(n) time because it may need to loop through each recipe ID to find a match. Therefore, HashSet is more efficient for this operation. Moreover, Remove() in HashSet also returns a bool value, matching the specification for RemoveSavedRecipe.
+
+- HashSet is suitable for checking whether a recipe is saved because its Contains() method has an average time complexity of O(1) since HashSet uses the hash of the recipe ID to find the value directly without needing to check every other value. In comparison, Contains() of List requires O(n) time because it may need to loop through each recipe ID to find a match. This makes HashSet more efficient for membership checks. In addition, Contains() returns a bool, which directly matches the specification requirement for IsRecipeSaved.
 
 ## 2. Integration
 
