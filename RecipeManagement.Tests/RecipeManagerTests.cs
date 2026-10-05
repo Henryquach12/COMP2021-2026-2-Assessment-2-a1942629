@@ -926,6 +926,29 @@ public sealed class RecipeManagerTests
         Assert.Empty(result);
     }
 
+    [Fact]
+    // Test Part B workflow searches, reports, saves and removes a Recipe.
+    public void PartBWorkflowSearchReportSaveAndRemoveRecipe()
+    {
+        var manager = CreateSearchManager();
+
+        Recipe searched = Assert.Single(manager.SearchByTitle("beef"));
+        int recipeId = searched.Id;
+
+        Assert.True(manager.AddSavedRecipe(recipeId));
+
+        IReadOnlyList<Recipe> report = manager.GetHighestProteinRecipes(1);
+        // The searched Recipe Id is also the highest protein Recipe.
+        Assert.Equal(recipeId, report[0].Id);
+
+        Assert.True(manager.IsRecipeSaved(recipeId));
+        Assert.Single(manager.GetSavedRecipes());
+
+        Assert.True(manager.RemoveSavedRecipe(recipeId));
+        Assert.False(manager.IsRecipeSaved(recipeId));
+        Assert.Empty(manager.GetSavedRecipes());
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
