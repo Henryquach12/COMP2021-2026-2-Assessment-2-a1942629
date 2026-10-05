@@ -680,6 +680,20 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
+    // Test SearchByIngredient can find ingredients even with different letter case.
+    public void SearchByIngredientIgnoresLetterCase()
+    {
+        var manager = CreateSearchManager();
+
+        IReadOnlyList<Recipe> result = manager.SearchByIngredient("ONION");
+
+        Assert.Equal(3, result.Count);
+        Assert.Contains(result, recipe => recipe.Id == 1);
+        Assert.Contains(result, recipe => recipe.Id == 3);
+        Assert.Contains(result, recipe => recipe.Id == 4);
+    }
+
+    [Fact]
     // Test SearchByIngredient returns a Recipe only once when several of its ingredients match.
     public void SearchByIngredientReturnsEachRecipeOnlyOnce()
     {
