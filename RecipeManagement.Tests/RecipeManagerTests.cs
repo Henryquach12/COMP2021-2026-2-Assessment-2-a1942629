@@ -850,6 +850,42 @@ public sealed class RecipeManagerTests
         Assert.False(result);
     }
 
+    [Fact]
+    // Test IsRecipeSaved returns true when the Recipe Id is saved.
+    public void IsRecipeSavedSuccessfullyReturnsTrueForSavedRecipe()
+    {
+        var manager = CreateSearchManager();
+        manager.AddSavedRecipe(1);
+
+        bool result = manager.IsRecipeSaved(1);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    // Test IsRecipeSaved returns false when the Recipe Id is not saved.
+    public void IsRecipeSavedReturnsFalseForUnsavedRecipe()
+    {
+        var manager = CreateSearchManager();
+
+        bool result = manager.IsRecipeSaved(1);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    // Test IsRecipeSaved returns false after the Recipe Id is removed from saved recipes.
+    public void IsRecipeSavedReturnsFalseAfterRecipeRemoved()
+    {
+        var manager = CreateSearchManager();
+        manager.AddSavedRecipe(1);
+        manager.RemoveSavedRecipe(1);
+
+        bool result = manager.IsRecipeSaved(1);
+
+        Assert.False(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
