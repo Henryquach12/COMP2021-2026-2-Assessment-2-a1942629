@@ -780,6 +780,40 @@ public sealed class RecipeManagerTests
         Assert.DoesNotContain(result, recipe => recipe.Id == 4);
     }
 
+    [Fact]
+    // Test AddSavedRecipe successfully adds an existing Recipe Id.
+    public void AddSavedRecipeSuccessfullyAddsExistingRecipe()
+    {
+        var manager = CreateSearchManager();
+
+        bool result = manager.AddSavedRecipe(1);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    // Test AddSavedRecipe returns false for a Recipe Id that does not exist.
+    public void AddSavedRecipeReturnsFalseForMissingRecipe()
+    {
+        var manager = CreateSearchManager();
+
+        bool result = manager.AddSavedRecipe(99);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    // Test AddSavedRecipe returns false when the Recipe Id is already saved.
+    public void AddSavedRecipeReturnsFalseForDuplicateRecipe()
+    {
+        var manager = CreateSearchManager();        
+        manager.AddSavedRecipe(1);
+
+        bool result = manager.AddSavedRecipe(1);
+
+        Assert.False(result);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
