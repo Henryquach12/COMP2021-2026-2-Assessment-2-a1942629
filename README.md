@@ -25,15 +25,13 @@ Starter repository for Parts A and B. Implement `RecipeManager` in Core; the App
 
 ## Build and run
 
-Open `RecipeManager/RecipeManagement.sln`:
+Open `RecipeManagement.sln`:
 
 ```bash
 dotnet build
 dotnet test
 dotnet run --project RecipeManagement.Application -- data/recipes.json
 ```
-
-Until you implement `RecipeManager`, menu options print a **Not implemented** message.
 
 ## AI acknowledgement
 
