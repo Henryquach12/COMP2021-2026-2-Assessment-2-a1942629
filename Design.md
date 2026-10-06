@@ -22,4 +22,6 @@ Part B is built on top of the existing Part A RecipeManager class instead of bei
 | Traverse cooking plan | LinkedList | O(n) | Each planned recipe may need to be visited. |
 | Complete next instruction | Queue | O(1) | The item at the front is removed. |
 | LINQ title/ingredient search | Recipe collection | O(n) | Each recipe may need to be inspected. |
-| Check whether a recipe is saved | Your chosen collection | | Explain how your collection performs membership checks. |
+| Check whether a recipe is saved | HashSet | Average O(1) | Contains() uses the ID hash to directly check the ID instead of scanning the whole collection |
+| Add a saved recipe | HashSet | Average O(1) | Add() uses the hash lookup to check for a duplicate before inserting the ID. |
+| Remove a saved recipe | HashSet | Average O(1) | It uses the ID hash to find the ID directly instead of looping through the collection. |
