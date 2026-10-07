@@ -643,14 +643,14 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
-    // Test SearchByTitle returns no Recipe when the search text is blank.
-    public void SearchByTitleReturnsEmptyForBlankSearchText()
+    // Test SearchByTitle returns all Recipes when the search text is blank.
+    public void SearchByTitleReturnsAllRecipesForBlankSearchText()
     {
         var manager = CreateSearchManager();
 
         // Empty and white-space search text are both treated as blank.
-        Assert.Empty(manager.SearchByTitle(""));
-        Assert.Empty(manager.SearchByTitle("   "));
+        Assert.Equal(manager.RecipeCount, manager.SearchByTitle("").Count);
+        Assert.Equal(manager.RecipeCount, manager.SearchByTitle("   ").Count);
     }
 
     [Fact]
@@ -707,14 +707,14 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
-    // Test SearchByIngredient returns no Recipe when the search text is blank.
-    public void SearchByIngredientReturnsEmptyForBlankSearchText()
+    // Test SearchByIngredient returns all Recipes when the search text is blank.
+    public void SearchByIngredientReturnsAllRecipesForBlankSearchText()
     {
         var manager = CreateSearchManager();
 
         // Empty and white-space search text are both treated as blank.
-        Assert.Empty(manager.SearchByIngredient(""));
-        Assert.Empty(manager.SearchByIngredient("   "));
+        Assert.Equal(manager.RecipeCount, manager.SearchByIngredient("").Count);
+        Assert.Equal(manager.RecipeCount, manager.SearchByIngredient("   ").Count);
     }
 
     [Fact]

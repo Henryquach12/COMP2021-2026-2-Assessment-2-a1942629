@@ -230,7 +230,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return [];
+            return new List<Recipe>(_recipes.Values);
         }
 
         string trimSearchText = searchText.Trim();
@@ -245,7 +245,7 @@ public sealed class RecipeManager : IRecipeManager
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return [];
+            return new List<Recipe>(_recipes.Values);
         }
 
         string trimSearchText = searchText.Trim();
