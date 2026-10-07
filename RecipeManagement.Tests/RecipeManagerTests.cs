@@ -803,6 +803,7 @@ public sealed class RecipeManagerTests
         bool result = manager.AddSavedRecipe(1);
 
         Assert.True(result);
+        Assert.True(manager.IsRecipeSaved(1));
     }
 
     [Fact]
@@ -814,6 +815,7 @@ public sealed class RecipeManagerTests
         bool result = manager.AddSavedRecipe(99);
 
         Assert.False(result);
+        Assert.False(manager.IsRecipeSaved(99));
     }
 
     [Fact]
@@ -841,6 +843,7 @@ public sealed class RecipeManagerTests
         bool result = manager.RemoveSavedRecipe(1);
 
         Assert.True(result);
+        Assert.False(manager.IsRecipeSaved(1));
     }
 
     [Fact]
