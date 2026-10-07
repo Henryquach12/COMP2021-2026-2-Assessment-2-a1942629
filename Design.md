@@ -12,7 +12,7 @@ I used HashSet to implement saved/favourite features.
 
 ## 2. Integration
 
-Part B is built on top of the existing Part A RecipeManager class instead of being implemented as a separate system. The Part B methods operate on the recipe catalogue that Part A already constructs, which is the _recipes dictionary. The title search, ingredient search and protein report use LINQ to query the values of the _recipes dictionary directly, which avoids creating extra copies of the recipe data. Because these queries read from the same catalogue, any recipe added or removed through the Part A AddRecipe or RemoveRecipe methods is immediately showed in search and report results. The saved recipe feature is also dependent on the catalogue. AddSavedRecipe calls the Part A FindRecipe method to verify that a recipe ID exists before it is saved. In addition, the saved collection stores only recipe IDs rather than complete Recipe objects, so recipe details are maintained in a single location and can be retrived from the dictionary when required.
+Part B is built on top of the existing Part A RecipeManager class instead of being implemented as a separate system. The Part B methods operate on the recipe catalogue that Part A already constructs, which is the _recipes dictionary. The title search, ingredient search and protein report use LINQ to query the values of the _recipes dictionary directly, which avoids creating extra copies of the recipe data. Because these queries read from the same catalogue, any recipe added or removed through the Part A AddRecipe or RemoveRecipe methods is immediately shown in search and report results. The saved recipe feature is also dependent on the catalogue. AddSavedRecipe calls the Part A FindRecipe method to verify that a recipe ID exists before it is saved. In addition, the saved collection stores only recipe IDs rather than complete Recipe objects, so recipe details are maintained in a single location and can be retrived from the dictionary when required.
 
 ## 3. Basic complexity
 
@@ -22,6 +22,6 @@ Part B is built on top of the existing Part A RecipeManager class instead of bei
 | Traverse cooking plan | LinkedList | O(n) | Each planned recipe may need to be visited. |
 | Complete next instruction | Queue | O(1) | The item at the front is removed. |
 | LINQ title/ingredient search | Recipe collection | O(n) | Each recipe may need to be inspected. |
-| Check whether a recipe is saved | HashSet | Average O(1) | Contains() uses the ID hash to directly check the ID instead of scanning the whole collection |
+| Check whether a recipe is saved | HashSet | Average O(1) | Contains() uses the ID hash to directly check the ID instead of scanning the whole collection. |
 | Add a saved recipe | HashSet | Average O(1) | Add() uses the hash lookup to check for a duplicate before inserting the ID. |
-| Remove a saved recipe | HashSet | Average O(1) | It uses the ID hash to find the ID directly instead of looping through the collection. |
+| Remove a saved recipe | HashSet | Average O(1) | Remove() uses the ID hash to find the ID directly instead of looping through the collection. |
