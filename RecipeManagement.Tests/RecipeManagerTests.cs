@@ -826,6 +826,9 @@ public sealed class RecipeManagerTests
         bool result = manager.AddSavedRecipe(1);
 
         Assert.False(result);
+
+        // The duplicate Id is not added.
+        Assert.Single(manager.GetSavedRecipes());
     }
 
     [Fact]
